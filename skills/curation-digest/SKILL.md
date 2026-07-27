@@ -23,11 +23,17 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## 1. Frame the search
 
-Get the target: a style ("analog collage", "low-poly retro"), an artist, or a subject — plus how many to save (default 8). Turn it into style + subject search terms, not a sentence.
+Get the target — a style ("analog collage", "low-poly retro"), an artist, or "what's good right now" — plus how many to save (default 8).
 
-## 2. Search the feed
+## 2. Build the candidate pool
 
-`titles_search_feed` with those terms. Page with the returned cursor if you need a wider pool than the first response. Pull enough candidates to be selective — aim to look at 2–3× the target count before cutting.
+`titles_search_feed` does **not** take a free-text query — it filters by `model_id`, `username`, `media_type`, and remix flags, and sorts by `feature` or `date_created`. So route by target:
+
+- **By style** → first `titles_search_models` with the style terms to get the artist models in that style, then `titles_search_feed({ model_id })` for each of the top matches. This is the main path; a style has no single feed query, it's a set of models.
+- **By artist** → `titles_search_feed({ username })`.
+- **"What's good" / a moodboard with no fixed style** → `titles_search_feed({ sort_by: "feature" })` for the featured pool.
+
+Page with the returned cursor for a wider pool — aim to look at 2–3× the target before cutting. `media_type: "image"` (or `"video"`) narrows it.
 
 ## 3. Judge, don't just collect
 
