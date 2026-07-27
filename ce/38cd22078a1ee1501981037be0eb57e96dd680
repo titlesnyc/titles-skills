@@ -1,0 +1,23 @@
+README.md
+  s_21d4ed85052edf::t_1d83268fb423b7 1-42
+LICENSE
+  s_21d4ed85052edf::t_377ebcf3b44e26 1-21
+skills/titles-setup/SKILL.md
+  s_21d4ed85052edf::t_d7c6793f6b778b 1-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ce38cd22078a1ee1501981037be0eb57e96dd680",
+  "prompts": {},
+  "sessions": {
+    "s_21d4ed85052edf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d8ab5c17-3dbb-41b0-a637-d1d6c8dfc91a",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Arnav Luthra <arnavl105@gmail.com>"
+    }
+  }
+}
