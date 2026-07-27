@@ -25,8 +25,11 @@ npx skills add titlesnyc/titles-skills -a claude-code
 | Skill | What it covers |
 |---|---|
 | [`titles-setup`](./skills/titles-setup/SKILL.md) | Connecting your agent to the TITLES MCP server (`https://mcp.titles.xyz/mcp`), authenticating via OAuth, and verifying the connection |
+| [`drop-pack`](./skills/drop-pack/SKILL.md) | Generate a cohesive multi-asset set in one artist's style — cover, variants, social crops — from a single brief, and publish the keepers with artist credit |
+| [`style-panel`](./skills/style-panel/SKILL.md) | Explore one brief across 4–6 different artists side by side, then build the full set in the winning style |
+| [`curation-digest`](./skills/curation-digest/SKILL.md) | Browse the TITLES feed, judge the best work in a style, save it to your library, and get a short taste report |
 
-More skills (image generation workflows, model discovery, publishing) are on the way.
+More skills (image editing, model discovery, publishing) are on the way.
 
 ## About the TITLES MCP server
 
