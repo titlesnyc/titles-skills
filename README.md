@@ -28,6 +28,7 @@ npx skills add titlesnyc/titles-skills -a claude-code
 | [`drop-pack`](./skills/drop-pack/SKILL.md) | Generate a cohesive multi-asset set in one artist's style — cover, variants, social crops — from a single brief, and publish the keepers with artist credit |
 | [`style-panel`](./skills/style-panel/SKILL.md) | Explore one brief across 4–6 different artists side by side, then build the full set in the winning style |
 | [`curation-digest`](./skills/curation-digest/SKILL.md) | Browse the TITLES feed, judge the best work in a style, save it to your library, and get a short taste report |
+| [`motion-pack`](./skills/motion-pack/SKILL.md) | Turn an artist's stills into a set of short motion loops — pins one video model across the set for consistent look and predictable per-clip cost |
 
 More skills (image editing, model discovery, publishing) are on the way.
 
