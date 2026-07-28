@@ -1,41 +1,51 @@
 # TITLES Skills
 
-Agent skills for the [TITLES](https://titles.xyz) MCP server — reusable instructions that teach coding agents (Claude Code, Codex, Cursor, and any other [agent-skills](https://github.com/vercel-labs/skills)-compatible agent) how to work with TITLES: connecting to the MCP, generating and editing images, discovering models, and publishing results.
+Agent skills for the [TITLES](https://titles.xyz) creative MCP — reusable
+instructions that teach agents (Claude Code, claude.ai, Cowork, and any
+MCP-capable Claude surface) how to work with TITLES: connecting to the MCP,
+generating and editing images, video, and audio, discovering artist-trained
+models, and running multi-asset creative packs.
 
-## Install
+Packaged as a Claude **plugin marketplace** with a single plugin, **`titles`**.
 
-```bash
-npx skills add titlesnyc/titles-skills
+## Install (Claude Code)
+
+```
+/plugin marketplace add titlesnyc/titles-skills
+/plugin install titles@titles-skills
 ```
 
-This opens an interactive picker for the skills and agents on your machine. Or install everything non-interactively:
+That installs the whole `titles` skill set. On claude.ai / Cowork, an org admin
+syncs this marketplace's plugin from **Org Settings → Skills**.
 
-```bash
-npx skills add titlesnyc/titles-skills --all
-```
+## What's inside
 
-Target a specific agent:
-
-```bash
-npx skills add titlesnyc/titles-skills -a claude-code
-```
-
-## Skills
-
-| Skill | What it covers |
-|---|---|
-| [`titles-setup`](./skills/titles-setup/SKILL.md) | Connecting your agent to the TITLES MCP server (`https://mcp.titles.xyz/mcp`), authenticating via OAuth, and verifying the connection |
-
-More skills (image generation workflows, model discovery, publishing) are on the way.
+The `titles` plugin bundles skills across images, video, audio, and creative
+packs — see [`titles/README.md`](./titles/README.md) for the full roster. Start
+with **`titles-setup`**; every other skill hands off to it when the TITLES tools
+aren't connected yet.
 
 ## About the TITLES MCP server
 
-The TITLES MCP server exposes the TITLES platform — AI image generation, model discovery, sessions, and publishing — over the [Model Context Protocol](https://modelcontextprotocol.io). It uses the Streamable HTTP transport with OAuth 2.1 (PKCE + dynamic client registration), so any modern MCP client can connect without pre-registered credentials.
+The TITLES MCP server exposes the TITLES platform — AI image/video/audio
+generation, model discovery, sessions, and publishing — over the
+[Model Context Protocol](https://modelcontextprotocol.io). It uses Streamable
+HTTP with OAuth 2.1 (PKCE + dynamic client registration), so any modern MCP
+client can connect without pre-registered credentials.
 
 - **Endpoint:** `https://mcp.titles.xyz/mcp`
-- **Docs in-band:** once connected, call the `titles_help` tool for a full, example-shaped catalog of available tools
+- **In-band docs:** once connected, call the `titles_help` tool for a live,
+  example-shaped catalog of available tools.
 
-Tool behavior is defined by the server itself — these skills add workflow knowledge on top (setup, multi-step flows, conventions), and never override what the server tells your agent.
+Tool behavior is defined by the server itself — these skills add workflow
+knowledge on top (setup, model choice, cost handling, delivery) and never
+override what the server tells your agent. The model and price catalog is
+resolved live at runtime; nothing here hardcodes it.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md). CI validates the marketplace on every
+push and PR (`scripts/validate_skills.py`).
 
 ## License
 

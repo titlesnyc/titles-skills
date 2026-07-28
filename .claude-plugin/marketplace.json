@@ -1,0 +1,19 @@
+{
+  "name": "titles-skills",
+  "owner": {
+    "name": "TITLES",
+    "url": "https://github.com/titlesnyc"
+  },
+  "metadata": {
+    "description": "Agent skills for the TITLES creative MCP (titles.xyz) — generate, edit, restyle, upscale, and animate images, video, and audio, plus multi-asset creative packs.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "titles",
+      "source": "./titles",
+      "version": "0.1.0",
+      "description": "titles.xyz creative tools on the TITLES MCP: generate/edit/restyle/upscale/vary/blend images, text-to-video + animate + restyle/upscale video, music + speech, and promo/motion/curation/style packs. Portable to any MCP-capable Claude surface."
+    }
+  ]
+}

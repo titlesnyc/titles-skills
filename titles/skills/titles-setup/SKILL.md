@@ -1,5 +1,7 @@
 ---
 name: titles-setup
+user-invocable: true
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
 description: Use when the user wants to connect their agent to TITLES, set up the TITLES MCP server, authenticate with TITLES, or when TITLES MCP tools are missing or returning authentication errors. Covers adding the server endpoint, the OAuth flow, verifying the connection, and troubleshooting.
 ---
 
