@@ -40,9 +40,13 @@ Settle the breadth (how many images, or a budget) before spending.
 
 Honor the step-1 focus: bias the searches to their style/direction, lead with `sort: "recent"` if they asked for new models, or sweep every axis for "surprise me". Either way the goal is **range, not the top of one query**: run several different searches across style axes (painterly, 3D, collage, glitch, photographic, illustrative, abstract), and vary the sort (`popularity`, `recent`, `alpha`) so you surface artists a single query would bury. Aim for a spread of architecture, medium, and mood. Note each artist's name and `model_url`.
 
-## 3. Budget → how wide to roam
+## 3. Budget → price the ceiling first, then set breadth
 
-Probe one generation, read `cost_usd` off the submit response (older servers nest it as `cost_quote.total_usd`). Ask the user's exploration budget, then compute how many (artist × prompt) samples fit — more budget = wider roam. Show the count and per-sample cost, get a go or a cap. Keep a running total and stop at the cap.
+Per-image cost varies **a lot** by architecture — a Nano Banana Pro or Flux sample can cost several times a Z-Image or Klein one. If you budget off the first (or cheapest) sample and extrapolate, you'll size the roam too generously and then have to **skip the expensive models mid-roam to stay in budget — which cuts exactly the diversity this skill exists for.** So price the ceiling before you talk breadth:
+
+- **Find the top per-sample cost in your candidate set**, not the first. Reason from architecture (the pricier families cost multiples of the cheap ones), or probe the dearest-looking candidate and read `cost_usd` off its submit response (older servers nest it as `cost_quote.total_usd`).
+- **Size the roam at that ceiling price** — ask the user's exploration budget, then compute how many samples fit *as if every one were the most expensive model*, so no pricey model has to be cut for cost.
+- Show the count and the worst-case per-sample cost, get a go or a cap, and keep a running total. Because you priced the ceiling, the real spend usually lands under the estimate — say so when it does.
 
 ## 4. Roam — vary the artist AND the prompt
 
