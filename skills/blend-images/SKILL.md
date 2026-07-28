@@ -25,7 +25,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 `titles_blend_images` takes two `output_id`s — images already on TITLES:
 - "these two" / "blend the ones I picked" → `titles_get_selection` (returns `output_ids` in pick order; first = image 1).
 - Their own recent work → `titles_list_outputs`. From the feed → `titles_search_feed` / `titles_get_feed_item`.
-- An outside image → import it first with **upload-image**, then blend the returned `output_id`. Local files aren't supported via MCP.
+- Both images must already be on TITLES — bringing in an outside image isn't supported via MCP yet; add it in the studio first.
 
 Confirm which image is 1 and which is 2 — the balance is directional.
 
