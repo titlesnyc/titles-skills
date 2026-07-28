@@ -13,9 +13,8 @@ description: >
   broadly across the catalog, presents the board grouped by look with each
   artist credited, and points at where to go deeper. Runs on the TITLES MCP —
   if TITLES tools are missing, connect mcp.titles.xyz/mcp first (see
-  titles-setup). NOT for: producing a finished asset set (promo-pack),
-  matching one artist without generating (find-artist), or browsing already-
-  published feed work (curation-digest).
+  titles-setup). NOT for: producing a finished asset set (promo-pack), or
+  browsing already-published feed work (curation-digest).
 ---
 
 # style-explorer
@@ -50,7 +49,7 @@ Generate a spread where **each sample is a different (artist, prompt) pairing**.
 
 Show the board via the `session_url`, **grouped by look/family**, each image credited to its artist with the `model_url`. For each cluster, a line on what's distinctive — the discovery is the map, not just the pictures. Then route the user onward:
 - **Make something in a style that landed** → `generate-image` (one image) or `promo-pack` (a full asset set), passing that `model_id`.
-- **Go deep on an artist** → `find-artist`, or `titles_set_following` to keep their work surfacing.
+- **Go deep on an artist** → `titles_set_following` to keep their work surfacing, or start creating in their style (`generate-image`).
 - **Roam further** → another spread, adjacent to whatever caught their eye, or off in a new direction.
 
 ## Etiquette
