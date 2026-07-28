@@ -26,7 +26,7 @@ Two entry points:
 - **From existing stills** — the user's own outputs (`titles_list_outputs` or `titles_get_selection`) or a drop already made. Use those `output_id`s.
 - **From a concept** — generate the stills first (this is `drop-pack`'s job; run it or its steps, then animate the keepers). Pick the artist via `titles_search_models`, credit them.
 
-Settle how many loops (default 3) and the motion intent per still before running.
+Settle how many loops (default 3) and the motion intent per still before running. **Which stills and what motion are the user's calls — if either is unclear, ask and stop.** Suggesting motion for a still you can see is fine; inventing the subject or the concept behind the set is not.
 
 ## 2. Pin one model + duration, then quote the cost
 

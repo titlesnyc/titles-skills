@@ -22,9 +22,11 @@ One brief, several artists, side by side — the human picks the direction. The 
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
 
-## 1. Take the brief
+## 1. Take the brief — never invent it
 
-Get the concept (what to make) and, optionally, a loose direction. The whole point is divergence, so keep the concept fixed and let the artists vary — don't over-constrain.
+Get the concept (what to make) from the user. The whole point is divergence, so keep the concept fixed and let the artists vary — don't over-constrain.
+
+**The concept is the user's to give. If it's missing, ask and stop** — don't infer one from earlier conversation or invent one because they said "show me options." Picking the *artists* is your job here; picking the *subject* is not.
 
 ## 2. Pick a diverse panel
 

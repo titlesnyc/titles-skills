@@ -22,12 +22,18 @@ One brief → a cohesive set of images in one TITLES artist's style, published w
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill (connect `https://mcp.titles.xyz/mcp`, OAuth, free to start) and stop. Don't fall back to non-TITLES tools.
 
-## 1. Take the brief
+## 1. Take the brief — never invent it
 
-Get three things before generating — ask only for what's missing, in one message:
-- **Subject / concept** (what the drop is of).
-- **Style direction** (an artist name, a vibe, or "you pick" — drives model selection).
+Three things before generating:
+- **Subject / concept** — what the drop is actually of.
+- **Style direction** — an artist, a reference, or a mood, in the user's words.
 - **What the set is for** (album, launch, profile, print) — this decides the asset list.
+
+**Subject and style are the user's to give. If either is missing, ask and stop.** Do not fill them in from the surrounding conversation, and do not treat "you pick" — least of all an option you wrote yourself — as license to invent a concept. A menu you authored is not the user's brief. Naming a category ("album cover set") is a *use*, not a direction: you still need to know what the record is.
+
+If the user genuinely wants you to choose, make the choice concrete and theirs: search the live catalog and offer 3–4 real directions with the artist named ("Hybrid Garden by vitoriacribb — surreal humid biome, porcelain interiors"), then let them pick. Proposing options is right; assuming one is not.
+
+The only things you may default are the asset list and aspect ratios below — those follow from the use, not from taste.
 
 Default asset list when the user doesn't specify: **1 hero (1:1), 2 variations (1:1), 1 wide (16:9), 1 vertical (9:16)** = 5 assets. Adjust to the use — a social pack leans 9:16/1:1; a cover leans 1:1 plus a wide banner. Decide the exact list and aspect ratios *before* generating and say them back.
 
