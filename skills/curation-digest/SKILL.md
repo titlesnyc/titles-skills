@@ -57,10 +57,10 @@ Save each keeper to the user's library with `titles_set_collection({ kind: "save
 
 ## 5. Deliver the taste report
 
-A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick with both credits, its `published_url`, and one line on *why* it earned the spot — pointing at what's actually in the image, not the title. Say which ones were newly saved vs. already in the library (the `changed` flag). Name what you cut and why; the cuts prove the picks. Close with the pattern you noticed across the set — that's the part a list can't give them. Then offer the next step: generate in this direction (`promo-pack`), spread the brief across artists (`style-panel`), or go deep on one artist (`find-artist`).
+A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick with both credits, its `published_url`, and one line on *why* it earned the spot — pointing at what's actually in the image, not the title. Say which ones were newly saved vs. already in the library (the `changed` flag). Name what you cut and why; the cuts prove the picks. Close with the pattern you noticed across the set — that's the part a list can't give them. Then offer the next step: generate in this direction (`promo-pack`), explore the range (`style-explorer`), or go deep on one artist (`find-artist`).
 
 ## Etiquette
 
 No generation, no spend — so no cost gate. Be opinionated in the picks; a curation report that saves everything isn't curation.
 
-If the user pivots from curating to *making* ("now generate one like these"), that's `promo-pack` or `style-panel` — hand off rather than generating here, so the cost gate those skills carry isn't skipped.
+If the user pivots from curating to *making* ("now generate one like these"), that.s `promo-pack` (make a set) or `style-explorer` (roam styles) — hand off rather than generating here, so the cost gate those skills carry isn't skipped.

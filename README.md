@@ -26,7 +26,7 @@ npx skills add titlesnyc/titles-skills -a claude-code
 |---|---|
 | [`titles-setup`](./skills/titles-setup/SKILL.md) | Connecting your agent to the TITLES MCP server (`https://mcp.titles.xyz/mcp`), authenticating via OAuth, and verifying the connection |
 | [`promo-pack`](./skills/promo-pack/SKILL.md) | Generate a set of promotional campaign assets in one artist's style, sized for each channel — explore models within a budget, iterate, produce the set, add text/edits |
-| [`style-panel`](./skills/style-panel/SKILL.md) | Explore one brief across 4–6 different artists side by side, then build the full set in the winning style |
+| [`style-explorer`](./skills/style-explorer/SKILL.md) | Roam the artist library — a wide, varied spread across many artists and prompts to discover styles, then point at where to go deeper |
 | [`curation-digest`](./skills/curation-digest/SKILL.md) | Browse the TITLES feed, judge the best work in a style, save it to your library, and get a short taste report |
 | [`motion-pack`](./skills/motion-pack/SKILL.md) | Turn an artist's stills into a set of short motion loops — pins one video model across the set for consistent look and predictable per-clip cost |
 
