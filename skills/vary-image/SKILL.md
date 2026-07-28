@@ -17,8 +17,6 @@ description: |
 
 New takes on an existing image — same idea, drawn from the image itself. No model or prompt: never ask for the original prompt, never search models.
 
-> Rolling out — `titles_vary_image` is on staging first. If it isn't in the tool list on this connection, tell the user variations aren't available here yet and offer `titles_rerun_execution` (exact repeat) or `edit-image` instead.
-
 ## Get connected
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
@@ -36,7 +34,12 @@ The tool takes one `output_id`:
 
 ## 3. Vary
 
-Call `titles_vary_image({ output_id, strength?, session_id? })` — single cheap call, submit directly, don't pre-ask cost. Read `cost_usd` off the response; handle `price_confirmation_required` by relaying the price and re-calling with an approved `max_price_usd`. Reuse the source `session_id`. Each run returns **two** variations. `titles_await_execution` → `titles_get_execution` for the inline previews.
+Two ways in, depending on what this connection exposes — both submit directly (it's a cheap call, ~$0.009/output; don't pre-ask cost):
+
+- **Dedicated tool, if present:** `titles_vary_image({ output_id, strength?, session_id? })`.
+- **Otherwise (the variation operator):** `titles_run_execution({ operator_id: "imgVariationNode", inputs: { image: { output_id }, strength }, session_id? })`. Same operation, no model to pick. `strength` is required here — pass the value from step 2 (default `"moderate"`).
+
+Either way: read `cost_usd` off the response and mention it; handle `price_confirmation_required` by relaying the price and re-calling with an approved `max_price_usd`. Reuse the source `session_id`. Then `titles_await_execution` → `titles_get_execution` for the inline previews.
 
 ## 4. Deliver
 
@@ -45,4 +48,5 @@ Call `titles_vary_image({ output_id, strength?, session_id? })` — single cheap
 
 ## Etiquette
 
-Two variations per run. If the user wants them looser or tighter, re-run with a different `strength` rather than explaining — one call is cheap.
+A set of new takes per run (the dedicated tool returns two). If the user wants them looser or tighter, re-run with a different `strength` rather than explaining — one call is cheap.
+
