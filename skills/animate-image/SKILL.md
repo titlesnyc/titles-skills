@@ -1,6 +1,9 @@
 ---
 name: animate-image
-description: |
+user-invocable: true
+argument-hint: [the motion]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Animate an image on TITLES (titles.xyz) — turn a still into a short video clip.
   Use when the user says: "animate this image", "make this move", "image to
   video", "bring this to life", "turn this into a clip", "add motion to this".
