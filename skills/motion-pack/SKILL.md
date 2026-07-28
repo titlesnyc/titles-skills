@@ -42,7 +42,12 @@ For each remaining still, `titles_animate_image({ output_id, prompt, model_id, d
 
 ## 4. Deliver
 
-Present the loops via the `session_url` (raw output URLs 403). Note that assembling them into one reel needs video concatenation, which isn't in the MCP yet — deliver as individual loops and say so. Offer to publish keepers.
+- **Always give the `session_url`** (the canvas). Raw output/CDN URLs 403 outside the browser.
+- **Hand over the actual clips** with `titles_download_asset({ output_id, format: "mp4" })` (or `webm`) — a short-lived (~5 min), no-auth download URL per loop. Video may take a moment to start when a format conversion is involved.
+  - **Shell host** (Claude Code / Codex): `curl` each to a named folder on disk and tell the user the path.
+  - **Chat host** (claude.ai / mobile — no filesystem): give the links to click before they expire; re-fetch a fresh one if it lapses (cheap).
+- **Say the ceiling out loud:** these are individual loops — assembling them into one reel needs video concatenation, which isn't in the MCP yet. Deliver the set as separate clips.
+- Offer to publish keepers.
 
 ## Etiquette
 
