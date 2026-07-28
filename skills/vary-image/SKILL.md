@@ -28,7 +28,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 The tool takes one `output_id`:
 - "this one" / "the one I picked" → `titles_get_selection`.
 - Recent work → `titles_list_outputs`; from the feed → `titles_search_feed` / `titles_get_feed_item`.
-- An outside image → import with **upload-image** first.
+- The image must already be on TITLES — bringing in an outside image isn't supported via MCP yet; add it in the studio first.
 
 ## 2. Set the strength
 
