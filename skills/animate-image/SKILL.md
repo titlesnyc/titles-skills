@@ -14,7 +14,8 @@ description: >
   on the TITLES MCP — if TITLES tools are missing, connect mcp.titles.xyz/mcp
   first (see titles-setup). NOT for: creating a still (generate-image), making a
   video from text (generate-video), targeted edits (edit-image), restyling
-  (restyle-image), or upscaling (upscale-image).
+  (restyle-image), or upscaling (upscale-image); for a SET of animated pieces,
+  use motion-pack.
 ---
 
 # animate-image
