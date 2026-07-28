@@ -28,7 +28,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## Generate
 
-One call: `titles_generate_video` with the scene + motion as the prompt — the model, duration, resolution, and aspect ratio resolve server-side. Video is priced per second and quotes for approval before anything runs.
+One call: `titles_generate_video` with the scene + motion as the prompt — the model, duration, resolution, and aspect ratio resolve server-side. For a specific look, pick a video model from the catalog first (`titles_search_models({ operator: "txt2VideoNode" })`) and pass its id as `model_id` — some are artist-trained; credit the creator. Video is priced per second and quotes for approval before anything runs.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
