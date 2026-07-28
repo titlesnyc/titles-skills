@@ -5,9 +5,9 @@ description: |
   an artist, and save it to a collection with a short taste report. Use when
   the user says: "find the best X on TITLES", "curate a moodboard", "save
   some references", "what's good in [style]", "build me a collection", "show
-  me strong work by [artist]". Searches the published feed, evaluates
-  candidates visually, saves the keepers, and summarizes what makes them
-  work. Mostly read-only — no generation cost. Runs on the TITLES MCP — if
+  me strong work by [artist]". Searches the published feed, looks at the
+  candidates, saves the keepers, and summarizes what makes them work.
+  Mostly read-only — no generation cost. Runs on the TITLES MCP — if
   TITLES tools are missing, connect mcp.titles.xyz/mcp first (see
   titles-setup). NOT for: generating new images (generate-image /
   drop-pack) or picking a model to create with (find-artist).
@@ -23,7 +23,9 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## 1. Frame the search
 
-Get the target — a style ("analog collage", "low-poly retro"), an artist, or "what's good right now" — plus how many to save (default 8).
+Get the target — a style ("analog collage", "low-poly retro"), an artist, or "what's good right now".
+
+**Size the keep-count to the pool, don't fix it up front.** Curation is the cut: keep roughly half of what you look at, floor of 3. If a pool of 11 yields 8 saves you collected, you didn't curate. Tell the user the ratio in the report ("5 of 11").
 
 ## 2. Build the candidate pool
 
@@ -33,11 +35,21 @@ Get the target — a style ("analog collage", "low-poly retro"), an artist, or "
 - **By artist** → `titles_search_feed({ username })`.
 - **"What's good" / a moodboard with no fixed style** → `titles_search_feed({ sort_by: "feature" })` for the featured pool.
 
-Page with the returned cursor for a wider pool — aim to look at 2–3× the target before cutting. `media_type: "image"` (or `"video"`) narrows it.
+**Keep `page_size` at 10 or less and page with the cursor.** Feed items are heavy (~4KB each — full asset metadata, avatars, embedded tool icons); `page_size: 20` on a prolific artist overflows the tool-result limit and dumps to a file. `media_type: "image"` (or `"video"`) narrows it.
 
-## 3. Judge, don't just collect
+## 3. Look at the work, then cut
 
-Look at the candidates and pick on real criteria, not order: craft, coherence with the brief, and variety across the set (don't save six near-duplicates). For a finalist you're unsure on, `titles_get_feed_item` for detail. Credit the artist behind each pick.
+**The feed tools return no images** — `titles_search_feed` and `titles_get_feed_item` give metadata only (unlike your own generations, which inline previews). To actually see a candidate, fetch its thumbnail from the public CDN and view it:
+
+```
+curl -sS -o cand.webp "<output.asset.thumbnail_url>"   # public, no auth
+sips -s format jpeg -Z 420 cand.webp --out cand.jpg    # macOS; any converter works
+```
+Then read the file. Do this for every candidate before cutting — judging from titles and descriptions alone isn't curation.
+
+Pick on craft, coherence with the brief, and variety (don't keep six near-duplicates). Common disqualifiers worth watching for: garbled hallucinated text where a model tried to render type, and compositions with unfilled gaps or unfinished edges. `titles_get_feed_item` adds the original prompt and an `is_saved` flag when you want more context on a finalist.
+
+**Credit runs two layers deep on TITLES**, and both belong in the report: the **publisher** (`owner.username`) and the **model's artist** (`samples[].name` where `model_type` is `artist`) — often different people. When a piece is a remix, the source work's creator is a third credit, usually named in the description.
 
 ## 4. Save the keepers
 
@@ -45,7 +57,7 @@ Save each keeper to the user's library with `titles_set_collection({ kind: "save
 
 ## 5. Deliver the taste report
 
-A short write-up *is* the collection: each pick with its artist credited (from the feed item's `owner.username`), its `published_url`, and one line per pick (or per cluster) on *why* it earned the spot. This grouped report is how the user (or a later `drop-pack` / `style-panel`) navigates the saves. Offer the next step — generate in this direction (`drop-pack`) or go deep on one artist (`find-artist`).
+A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick with both credits, its `published_url`, and one line on *why* it earned the spot — pointing at what's actually in the image, not the title. Say which ones were newly saved vs. already in the library (the `changed` flag). Name what you cut and why; the cuts prove the picks. Close with the pattern you noticed across the set — that's the part a list can't give them. Then offer the next step: generate in this direction (`drop-pack`), spread the brief across artists (`style-panel`), or go deep on one artist (`find-artist`).
 
 ## Etiquette
 
