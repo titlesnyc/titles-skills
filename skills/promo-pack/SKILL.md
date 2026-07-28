@@ -1,6 +1,9 @@
 ---
 name: promo-pack
-description: |
+user-invocable: true
+argument-hint: [campaign goal]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Generate a set of promotional campaign assets on TITLES (titles.xyz) in
   one artist's style — cover, social posts, banners, story crops — each
   sized for wherever the campaign runs. Use when the user wants marketing or
@@ -85,3 +88,4 @@ Offer to publish selected finals to the TITLES feed with artist credit: `titles_
 ## Cost & etiquette
 
 Every generation returns `cost_usd` on submit — keep a running total and remind the user at each gate and each feedback round. Within an approved budget, fire fast; don't re-ask per generation. One canvas link, the artist credited, the set laid out — no play-by-play between generations.
+
