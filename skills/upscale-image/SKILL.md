@@ -1,6 +1,8 @@
 ---
 name: upscale-image
-description: |
+user-invocable: true
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Upscale an image on TITLES (titles.xyz) — make it bigger and sharper. Use when
   the user says: "upscale this image", "increase the resolution", "make this
   higher-res", "enhance this image", "sharpen this", "make it print quality",
