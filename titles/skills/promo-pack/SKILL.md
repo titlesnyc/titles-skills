@@ -11,8 +11,8 @@ description: >
   "launch visuals", "social media pack", "assets for my release", "marketing
   set", "cover plus socials". Asks the goal, then the style; explores a few
   artist models within a budget; iterates the direction with you; then
-  produces the full set at the right aspect ratios and can add text or
-  edits. Runs on the TITLES MCP — if TITLES tools are missing, connect
+  produces the full set at the right aspect ratios, and can add text,
+  edits, or a final upscale. Runs on the TITLES MCP — if TITLES tools are missing, connect
   mcp.titles.xyz/mcp first (see titles-setup). NOT for: a single image
   (generate-image), one edit to one image (edit-image), or a video set
   (motion-pack).
@@ -65,18 +65,26 @@ Direction locked. Now **quote the set separately**: project the chosen model's p
 
 Generate each asset at its ratio in the locked model, **one subject per role** — hold the style constant (the model does that for free) and give each asset its own subject inside the same world, so the set is different images that belong together, not one image resized. One at a time, shared `session_id`, running cost reported. Deliver via canvas + downloads, and offer a feedback round on the set too.
 
-## 7. Text & edits
+## 7. Text & edits — across the whole set
 
-When the set is right, ask if they want to **add text** (title, tagline) or **make edits**. If yes, ask which tier:
+When the set is right, ask if they want to **add text** (title, tagline) or **make edits**. An edit like adding a title applies to **every image the user accepted**, not just one — carry it across the whole set unless the user names a subset. Ask which tier:
 
 - **Higher quality (pricier) → Nano Banana Pro.** Resolve it live: `titles_search_models({ query: "nano banana", operator: "imgEditNode" })`. Best for text and precise edits — the right call for adding a title.
 - **Budget → Seedream 5.0 Lite.** Resolve live: `titles_search_models({ query: "seedream lite", operator: "imgEditNode" })`.
 
-Run the edit on the **selected final** as the base: `titles_edit_image({ output_id: <that final>, prompt: <only the change they asked for>, model_id: <resolved id> })`. The prompt describes the requested change and nothing else — name what stays. Report cost; iterate edits as asked.
+**Quote the whole step before running:** the per-image edit cost × the number of accepted images being edited, shown as one total — this is fresh spend across the set, not a single edit. Get a go.
+
+Then run the edit on **each accepted image** as its own base: `titles_edit_image({ output_id: <that image>, prompt: <only the change they asked for>, model_id: <resolved id>, session_id })`, one at a time on the shared `session_id`. Keep the change identical in content but adapt its placement per asset — a tagline sits differently on a 1:1 cover than a 9:16 story. Report the running total across the batch; iterate as asked.
 
 ## 8. Publish (offer)
 
 Offer to publish selected finals to the TITLES feed with artist credit: `titles_publish`, showing the `name` + `description` first and getting the user's go. Offer it — don't assume — many promo assets are for off-platform use.
+
+## 9. Upscale (offer) — final step
+
+As the **last step**, offer to upscale the finished assets to higher resolution for print and delivery. Use **SeedVR — never Bria**: resolve it live with `titles_search_models({ query: "seedvr", operator: "imgUpscaleNode" })` and pass that `model_id` (the Bria creative upscaler is a different, pricier model — don't use it here).
+
+Upscaling applies to **all the accepted/final images** (or the subset the user names). **Quote the whole step first** — the per-image upscale cost × the number of images, as one total — and get a go. Then `titles_upscale_image({ output_id: <each final>, model_id: <SeedVR id>, session_id })`, one at a time on the shared `session_id`, running total reported. Deliver the upscaled files via **Delivery** below.
 
 ## Delivery — canvas + files
 
