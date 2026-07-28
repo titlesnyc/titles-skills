@@ -1,6 +1,9 @@
 ---
 name: restyle-video
-description: |
+user-invocable: true
+argument-hint: [the change to make]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Transform an existing video on TITLES (titles.xyz) with a text prompt — change
   its subjects, look, or scene while keeping the motion. Use when the user says:
   "restyle this video", "change the style of this clip", "turn this video into
