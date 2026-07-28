@@ -24,9 +24,13 @@ Targeted changes to an existing image — change one thing, keep the rest.
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## Edit
+## 1. Get the edit, then match a model
 
-One call: `titles_edit_image` with the image's `output_id` and the instruction as the prompt — name what stays as well as what changes. If the ask is really a whole-image reinterpretation ("make it all watercolor"), hand off to **restyle-image**.
+Get the change they want and how exacting it is. Match a model to it with `titles_search_models({ operator: "imgEditNode" })` — text/typography or precise work wants a high-fidelity model (e.g. Nano Banana Pro), a quick change a cheaper one — and pass its `model_id`. If the ask is really a whole-image reinterpretation ("make it all watercolor"), hand off to **restyle-image**.
+
+## 2. Edit
+
+One call: `titles_edit_image` with the image's `output_id`, the chosen `model_id`, and the instruction as the prompt — name what stays as well as what changes.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 

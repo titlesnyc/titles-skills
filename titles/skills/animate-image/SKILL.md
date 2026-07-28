@@ -28,7 +28,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## Animate
 
-One call: `titles_animate_image` with the still's `output_id`; the prompt is the motion (camera move, subject action) — the image already provides the look.
+Get the motion they want (camera move, subject action) — the image already provides the look, so the prompt is the movement, not the scene. If they want a particular clip style, match a video model with `titles_search_models({ operator: "img2VidNode" })` and pass its `model_id`; otherwise the one call `titles_animate_image` with the still's `output_id` lets the server pick a default. Video is priced per second and quotes for approval before anything runs.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 

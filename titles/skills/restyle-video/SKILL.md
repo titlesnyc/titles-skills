@@ -26,7 +26,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## Transform
 
-No dedicated tool for this one — it's the video-to-video operator, `vid2VidNode`, via the generic path: `titles_get_operator({ operator_id: "vid2VidNode" })` for the live input shape, a model from `titles_search_models({ operator: "vid2VidNode" })`, then `titles_run_execution`. The prompt is the change to make. Video-to-video quotes for approval before anything runs.
+Get the target look/change first if it isn't clear. No dedicated tool for this one — it's the video-to-video operator, `vid2VidNode`, via the generic path: match a model with `titles_search_models({ operator: "vid2VidNode" })` (pick the best fit for the look they want), `titles_get_operator({ operator_id: "vid2VidNode" })` for the live input shape, then `titles_run_execution` with the chosen `model_id` and the change as the prompt. Video-to-video quotes for approval before anything runs.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 

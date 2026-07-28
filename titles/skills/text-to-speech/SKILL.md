@@ -24,7 +24,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## Speak
 
-One call: `titles_generate_speech` — the `text` is spoken verbatim, so pass exactly what the user wants said. Given a description instead of a script, draft the wording and confirm it before spending: they're paying to hear their words, not your paraphrase.
+The `text` is spoken verbatim, so pass exactly what the user wants said — given a description instead of a script, draft the wording and confirm it before spending (they're paying to hear their words, not your paraphrase). If they want a particular voice or delivery, match a voice model with `titles_search_models({ operator: "txt2SpeechNode" })` and pass its `model_id`; otherwise the one call `titles_generate_speech` lets the server pick a default voice.
 
 You can't hear the result — hand over the listen link and let the user judge.
 

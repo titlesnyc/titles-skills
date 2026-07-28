@@ -26,9 +26,13 @@ Text to image on TITLES, in a real artist's style — the artist credited and pa
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## Generate
+## 1. Get their idea, then match a model
 
-Pick the artist model deliberately with `titles_search_models` — the artist-trained models are the point — then it's one call: `titles_generate_image`. Keep the subject explicit in the prompt; the model biases aesthetics, not content.
+Ask what they have in mind — a subject, a style, an artist, a reference — if they haven't already said; don't invent a direction for them. Then match it: `titles_search_models` on their style + subject terms, weigh the results' style/subject tags, and pick the best-fitting artist model (the artist-trained models are the point — don't just grab the first hit). Surface the pick and credit the artist.
+
+## 2. Generate
+
+Hand the chosen `model_id` to the one call, `titles_generate_image`. Keep the subject explicit in the prompt; the model biases aesthetics, not content.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 

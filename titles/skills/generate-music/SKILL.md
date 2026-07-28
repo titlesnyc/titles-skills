@@ -26,7 +26,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## Compose
 
-One call: `titles_generate_music` with a prompt describing the **sound** — genre, mood, instrumentation, tempo. Describe the sound, not artists or labels: provider moderation hard-fails prompts naming real artists/songs, so translate "sounds like [artist]" into sonic qualities. Words to sing go in `lyrics`; ask lyrics-vs-instrumental if it's a "song."
+Get the brief — genre, mood, instrumentation, tempo — described as the **sound**, not artists or labels (provider moderation hard-fails prompts naming real artists/songs, so translate "sounds like [artist]" into sonic qualities). Match a model to it with `titles_search_models({ operator: "txt2MusicNode" })` — they differ on genre strengths and whether they sing lyrics — and pass its `model_id`. Then the one call, `titles_generate_music`, with that brief as the prompt; words to sing go in `lyrics`; ask lyrics-vs-instrumental if it's a "song."
 
 You can't hear the result — don't describe how it sounds; hand over the listen link and let the user judge.
 
