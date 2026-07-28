@@ -1,6 +1,8 @@
 ---
 name: vary-image
-description: |
+user-invocable: true
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Make fresh variations of an existing TITLES (titles.xyz) image — same idea,
   new takes — on a fixed pipeline, no model or prompt to pick. Use when the
   user says: "variations of this", "more like this one", "some alternates",
