@@ -28,7 +28,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## 1. Get their idea, then match a model
 
-Ask what they have in mind — a subject, a style, an artist, a reference — if they haven't already said; don't invent a direction for them. Then match it: `titles_search_models` on their style + subject terms, weigh the results' style/subject tags, and pick the best-fitting artist model (the artist-trained models are the point — don't just grab the first hit). Surface the pick and credit the artist.
+Ask what they have in mind — a subject, a style, an artist, a reference — if they haven't already said; don't invent a direction for them. Then match it: `titles_search_models({ operator: "txt2ImgNode" })` on their style + subject terms, weigh the results' style/subject tags, and pick the best-fitting artist model (the artist-trained models are the point — don't just grab the first hit). Surface the pick and credit the artist.
 
 ## 2. Generate
 
