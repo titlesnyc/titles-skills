@@ -1,6 +1,9 @@
 ---
 name: generate-image
-description: |
+user-invocable: true
+argument-hint: [subject + style]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Generate an image on TITLES (titles.xyz) from text — rendered by an AI model
   trained by a real artist, with that artist credited and paid on every run. Use
   when the user says: "generate an image", "make a poster", "album cover",
