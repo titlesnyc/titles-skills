@@ -1,6 +1,9 @@
 ---
 name: motion-pack
-description: |
+user-invocable: true
+argument-hint: [the motion or concept]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Turn a TITLES (titles.xyz) artist's still images into a set of short
   motion loops. Use when the user wants animated art in an artist's style:
   "animate these", "make a motion pack", "a set of moving pieces", "loops
@@ -52,3 +55,4 @@ For each remaining still, `titles_animate_image({ output_id, prompt, model_id, d
 ## Etiquette
 
 Fire after the cost gate, then stay quiet through the long renders — no play-by-play while waiting on video. One canvas link, the set, the artist credited.
+
