@@ -28,7 +28,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 ## 1. Ask what they want to explore — specific first, breadth second
 
-Exploration is the ask, so you don't need a full concept — but **ask first whether they have something specific in mind**, and only offer the wide-open options if they don't. Route on their answer:
+Exploration is the ask, so you don't need a full concept. **If they already gave a direction when they invoked the skill — a seed style/theme, "only new models", or "surprise me" — route on it, don't ask again.** Otherwise **ask whether they have something specific in mind** before defaulting to breadth. Either way, route on:
 - **A particular style or direction** — a theme, medium, mood, subject, or era ("something dreamlike", "3D creatures", "art deco"). Bias the roam toward it across several artists, but keep wandering within it.
 - **Only new / recent models** — they want to see what's just landed. Roam the newest additions via `titles_search_models({ sort: "recent" })`.
 - **Specific artists or mediums** — center the roam on those and their neighbors.
