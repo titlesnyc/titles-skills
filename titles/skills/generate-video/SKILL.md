@@ -24,45 +24,14 @@ Text to video on TITLES — describe a scene and get a short clip. For animating
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Pick the model
+## Generate
 
-There's no dedicated tool — this runs through the generic execution path, so you choose the video model.
+One call: `titles_generate_video` with the scene + motion as the prompt — the model, duration, resolution, and aspect ratio resolve server-side. Video is priced per second and quotes for approval before anything runs.
 
-- `titles_search_models({ operator: "txt2VideoNode" })` — never guess model names. Some are artist-trained video models; if you pick one, credit the creator by name with their `model_url`. Each result carries the `{ model_id, adapter_id }` selector you pass as `model`.
-- Weigh `agent_description` + tags for the look and motion the user wants.
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Resolve the model's limits
+## Deliver the file
 
-Video inputs are model-specific. After picking, call `titles_resolve_input_constraints({ operator_id: "txt2VideoNode", adapter_id })` to get the allowed `duration`, `resolution`, and `aspect_ratio`. Choose from those — out-of-range values are rejected before anything runs.
-
-## 3. Generate
-
-```
-titles_run_execution({
-  operator_id: "txt2VideoNode",
-  inputs: {
-    model: { model_id, adapter_id },   // from step 1 — NOT model_architecture
-    prompt,                            // the scene + the motion
-    aspect_ratio,                      // from the resolved set
-    duration,                          // from the resolved set (string seconds)
-    resolution,                        // from the resolved set
-    generate_audio                     // boolean; true adds a soundtrack on models that support it
-  },
-  session_id?
-})
-```
-
-Video clears the confirmation threshold, so expect **`price_confirmation_required`** back on the first call — that's the quote, nothing has run or charged. Relay the exact `cost_usd`, get the user's OK, then re-call the same tool with `max_price_usd` set to the approved amount (never set it without approval). Reuse `session_id` to keep related clips on one canvas.
-
-## 4. Deliver
-
-- Video renders take a while — expect several `titles_await_execution` re-entries, then `titles_get_execution` for the finished clip.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "mp4" })` — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-One quote before spending, one clip out, its cost, the link and file. No play-by-play while it renders.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

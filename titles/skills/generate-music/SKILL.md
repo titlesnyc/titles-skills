@@ -22,39 +22,16 @@ Text description → an original music track.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Take the brief
+## Compose
 
-Turn the idea into a `prompt` describing the **sound** — genre, mood, instrumentation, tempo ("mellow lofi for a podcast intro, rainy-night mood, tape hiss"). Two rules:
+One call: `titles_generate_music` with a prompt describing the **sound** — genre, mood, instrumentation, tempo. Describe the sound, not artists or labels: provider moderation hard-fails prompts naming real artists/songs, so translate "sounds like [artist]" into sonic qualities. Words to sing go in `lyrics`; ask lyrics-vs-instrumental if it's a "song."
 
-- **Describe the sound, not artists or labels.** Provider moderation hard-fails prompts that name real artists/songs — translate "sounds like [artist]" into the sonic qualities instead.
-- **Lyrics vs instrumental:** words to sing go in `lyrics` (used verbatim, lyrics-capable models only); instrumental-only sets `is_instrumental: true`. Ask which the user wants if it's a "song."
+You can't hear the result — don't describe how it sounds; hand over the listen link and let the user judge.
 
-## 2. Run it
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-Two ways in, depending on what this connection exposes — submit directly either way (don't pre-ask cost):
+## Deliver the file
 
-- **Dedicated tool, if present:** `titles_generate_music({ prompt, lyrics?, instrumental?, duration?, model_id?, session_id? })` — resolves the model and duration server-side.
-- **Otherwise (the music operator):** pick a model with `titles_search_models({ operator: "txt2MusicNode" })`, then `titles_resolve_input_constraints({ operator_id: "txt2MusicNode", adapter_id })` for the allowed `duration`, and call:
-  ```
-  titles_run_execution({
-    operator_id: "txt2MusicNode",
-    inputs: { model: { model_id, adapter_id }, prompt, duration, is_instrumental, lyrics? },
-    session_id?
-  })
-  ```
-
-Read `cost_usd` off the response and mention it; if `price_confirmation_required` comes back, relay the exact price, get approval, then re-call with `max_price_usd` (never set it without approval).
-
-## 3. Deliver
-
-Audio has **no inline preview** — you can't hear it, so don't describe how it sounds; let the user judge. `titles_await_execution` to confirm it finished, then:
-
-- The `session_url` to **listen**.
-- The file via `titles_download_asset({ output_id, format: "mp3" })` (or `wav`) — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-Submit, report the cost, hand over a listen link and a file — don't narrate the sound.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

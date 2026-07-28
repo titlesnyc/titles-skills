@@ -17,38 +17,18 @@ description: >
 
 # vary-image
 
-New takes on an existing image — same idea, drawn from the image itself. No model or prompt: never ask for the original prompt, never search models.
+New takes on an existing image — same idea, drawn from the image itself. Never ask for the original prompt, never search models.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the image
+## Vary
 
-The tool takes one `output_id`:
-- "this one" / "the one I picked" → `titles_get_selection`.
-- Recent work → `titles_list_outputs`; from the feed → `titles_search_feed` / `titles_get_feed_item`.
-- The image must already be on TITLES — bringing in an outside image isn't supported via MCP yet; add it in the studio first.
+One call: `titles_vary_image` with the image's `output_id`; `strength` sets how far the takes may stray. Cheap — if the user wants them looser or tighter, re-run at a different strength rather than explaining.
 
-## 2. Set the strength
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-`strength` runs `minimal → slight → moderate (default) → strong → extreme` — how far the variations may stray from the source. Ask only if the user hinted at "close" vs "loose"; otherwise moderate.
+## Deliver the file
 
-## 3. Vary
-
-Two ways in, depending on what this connection exposes — both submit directly (it's a cheap call, ~$0.009/output; don't pre-ask cost):
-
-- **Dedicated tool, if present:** `titles_vary_image({ output_id, strength?, session_id? })`.
-- **Otherwise (the variation operator):** `titles_run_execution({ operator_id: "imgVariationNode", inputs: { image: { output_id }, strength }, session_id? })`. Same operation, no model to pick. `strength` is required here — pass the value from step 2 (default `"moderate"`).
-
-Either way: read `cost_usd` off the response and mention it; handle `price_confirmation_required` by relaying the price and re-calling with an approved `max_price_usd`. Reuse the source `session_id`. Then `titles_await_execution` → `titles_get_execution` for the inline previews.
-
-## 4. Deliver
-
-- The `session_url` (canvas).
-- Files via `titles_download_asset({ output_id, format: "png" })`, host-adaptive (disk on Claude Code/Codex, links on chat hosts).
-
-## Etiquette
-
-A set of new takes per run (the dedicated tool returns two). If the user wants them looser or tighter, re-run with a different `strength` rather than explaining — one call is cheap.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

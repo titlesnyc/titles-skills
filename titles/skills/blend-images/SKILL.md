@@ -16,35 +16,18 @@ description: >
 
 # blend-images
 
-Merge two images into one. Fixed pipeline — no artist model, no prompt, so there's nothing to search or credit here.
+Merge two images into one. Fixed pipeline — no artist model, no prompt.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the two images
+## Blend
 
-`titles_blend_images` takes two `output_id`s — images already on TITLES:
-- "these two" / "blend the ones I picked" → `titles_get_selection` (returns `output_ids` in pick order; first = image 1).
-- Their own recent work → `titles_list_outputs`. From the feed → `titles_search_feed` / `titles_get_feed_item`.
-- Both images must already be on TITLES — bringing in an outside image isn't supported via MCP yet; add it in the studio first.
+One call: `titles_blend_images` with the two `output_id`s. The balance is directional (image 1 vs image 2), so confirm which is which before leaning it.
 
-Confirm which image is 1 and which is 2 — the balance is directional.
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Set the balance
+## Deliver the file
 
-`blend` is 0–100, default 50: lower leans toward image 1, higher toward image 2. Ask if the user has a lean; otherwise 50. `aspect_ratio` defaults to `1:1` — set it to match the use.
-
-## 3. Blend
-
-Call `titles_blend_images({ output_id_1, output_id_2, blend?, aspect_ratio?, session_id? })`. It's a single cheap call, so submit directly — don't pre-ask about cost. Read `cost_usd` off the response and mention it. If the run comes back `price_confirmation_required`, relay the exact price and only re-call with `max_price_usd` set to what the user approved. Reuse the source `session_id` so the blend lands on the same canvas. `titles_await_execution` → `titles_get_execution` for the inline preview.
-
-## 4. Deliver
-
-- The `session_url` (canvas) — raw URLs 403.
-- The file via `titles_download_asset({ output_id, format: "png" })` — host-adaptive: `curl` to disk on Claude Code/Codex, click-link on chat hosts.
-
-## Etiquette
-
-One call, one result out (× the balance you chose). No model, so no artist credit line here — just the merged image and its cost.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

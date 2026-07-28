@@ -24,31 +24,14 @@ Text to image on TITLES, in a real artist's style — the artist credited and pa
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Pick the artist model
+## Generate
 
-The artist-trained models are the point — pick deliberately, don't grab the first hit.
+Pick the artist model deliberately with `titles_search_models` — the artist-trained models are the point — then it's one call: `titles_generate_image`. Keep the subject explicit in the prompt; the model biases aesthetics, not content.
 
-- Always `titles_search_models` first — never guess or reuse model names; the catalog changes weekly. Query with style + subject nouns (`watercolor botanicals`, `gritty cyberpunk portrait`), not full sentences. Filter `output_type: "image"`.
-- Weigh each result's `agent_description` and `style` / `subjects` / `mood` / `excels_at` tags; when torn, `titles_get_model` for the full profile and samples.
-- Tell the user which artist you picked and why, credit the creator by name, include the `model_url`. If they'd rather choose, show the top options and stop.
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Generate
+## Deliver the file
 
-Call `titles_generate_image({ prompt, model_id, aspect_ratio?, outputs_count? })` — submit directly (stills are cheap; don't pre-ask cost). Read `cost_usd` off the response and mention it; if `price_confirmation_required` comes back, relay the exact price, get the user's OK, then re-call with `max_price_usd` set to the approved amount (never set it without approval).
-
-- **Prompt:** keep the subject explicit even when the model's tags cover the style — the model biases aesthetics, not subject. Layer subject, mood, and composition into one prompt.
-- `aspect_ratio`: pick for the use (`1:1` cover, `16:9` banner, `9:16` story); omit to let the model default. `outputs_count` up to 4 for variations in one call.
-- Reuse the returned `session_id` on follow-ups so work stays on one canvas — and run related calls **one at a time** (parallel calls each open a new canvas). For "one more" / "again", `titles_rerun_execution({ execution_id })` rather than rewriting the prompt.
-
-## 3. Deliver
-
-- `titles_await_execution` → `titles_get_execution` for the finished output with inline previews.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "png" })` — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-Run without asking twice for a single generation. One summary naming the artist, the link, the file — no play-by-play.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.
