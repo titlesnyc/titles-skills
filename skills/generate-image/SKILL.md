@@ -14,7 +14,8 @@ description: >
   if TITLES tools are missing, connect mcp.titles.xyz/mcp first (see
   titles-setup). NOT for: changing an existing image (edit-image /
   restyle-image), enlarging one (upscale-image), or making video
-  (generate-video / animate-image).
+  (generate-video / animate-image); for a full multi-asset campaign set, use
+  promo-pack.
 ---
 
 # generate-image
