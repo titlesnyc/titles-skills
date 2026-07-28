@@ -1,6 +1,8 @@
 ---
 name: upscale-video
-description: |
+user-invocable: true
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Upscale a video on TITLES (titles.xyz) — make an existing clip
   higher-resolution and sharper. Use when the user says: "upscale this video",
   "make this clip higher-res", "enhance this video", "4k version of this clip",
