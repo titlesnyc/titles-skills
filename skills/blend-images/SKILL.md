@@ -1,6 +1,8 @@
 ---
 name: blend-images
-description: |
+user-invocable: true
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Blend two images into one on TITLES (titles.xyz) — merged on a fixed
   pipeline with a balance dial, no model or prompt to pick. Use when the user
   says: "blend these", "merge these two images", "combine these", "mix image A
@@ -45,3 +47,4 @@ Call `titles_blend_images({ output_id_1, output_id_2, blend?, aspect_ratio?, ses
 ## Etiquette
 
 One call, one result out (× the balance you chose). No model, so no artist credit line here — just the merged image and its cost.
+
