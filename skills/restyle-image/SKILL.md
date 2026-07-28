@@ -1,6 +1,9 @@
 ---
 name: restyle-image
-description: |
+user-invocable: true
+argument-hint: [target style]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Restyle an image on TITLES (titles.xyz) — reinterpret a whole image in a new
   style while keeping its subject, including running it through the style of an
   AI model trained by a real artist (credited and paid). Use when the user says:
