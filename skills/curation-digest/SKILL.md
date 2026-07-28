@@ -1,6 +1,9 @@
 ---
 name: curation-digest
-description: |
+user-invocable: true
+argument-hint: [optional: style or artist to focus]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Browse the TITLES (titles.xyz) feed, judge the best work in a style or by
   an artist, and save it to a collection with a short taste report. Use when
   the user says: "find the best X on TITLES", "curate a moodboard", "save
@@ -64,3 +67,4 @@ A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick
 No generation, no spend — so no cost gate. Be opinionated in the picks; a curation report that saves everything isn't curation.
 
 If the user pivots from curating to *making* ("now generate one like these"), that.s `promo-pack` (make a set) or `style-explorer` (roam styles) — hand off rather than generating here, so the cost gate those skills carry isn't skipped.
+
