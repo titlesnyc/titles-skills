@@ -22,46 +22,14 @@ Transform an existing video with a prompt — change its subjects, look, or scen
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the video
+## Transform
 
-This runs on a video output already on TITLES (its `output_id`):
+No dedicated tool for this one — it's the video-to-video operator, `vid2VidNode`, via the generic path: `titles_get_operator({ operator_id: "vid2VidNode" })` for the live input shape, a model from `titles_search_models({ operator: "vid2VidNode" })`, then `titles_run_execution`. The prompt is the change to make. Video-to-video quotes for approval before anything runs.
 
-- "this one" / "the clip I picked" → `titles_get_selection`.
-- Their recent work → `titles_list_outputs`; from the feed → `titles_search_feed({ media_type: "video" })` / `titles_get_feed_item`.
-- Not on TITLES yet? An outside video can't be brought in via MCP — make it on TITLES first (generate-video / animate-image).
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Pick the model
+## Deliver the file
 
-No dedicated tool — choose the video-edit model:
-
-- `titles_search_models({ operator: "vid2VidNode" })` — never guess names; each result carries the `{ model_id, adapter_id }` selector. Credit the creator if it's an artist model.
-
-## 3. Transform
-
-```
-titles_run_execution({
-  operator_id: "vid2VidNode",
-  inputs: {
-    video: { output_id },              // the clip to transform
-    model: { model_id, adapter_id },   // from step 2
-    prompt                             // the change to make
-  },
-  session_id?
-})
-```
-
-- **Prompt is the change** — "make it a snowy night scene", "turn the car into a horse", "1980s VHS look".
-- Video-to-video clears the confirmation threshold, so expect **`price_confirmation_required`** back — the quote, nothing charged yet. Relay the exact `cost_usd`, get the user's OK, then re-call with `max_price_usd` (never set it without approval). Reuse `session_id`.
-
-## 4. Deliver
-
-- Renders take a while — several `titles_await_execution` re-entries, then `titles_get_execution`.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "mp4" })` — host-adaptive.
-
-## Etiquette
-
-One quote before spending, one clip out, its cost, link and file. No play-by-play while it renders.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

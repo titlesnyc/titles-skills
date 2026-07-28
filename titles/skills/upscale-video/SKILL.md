@@ -21,44 +21,14 @@ A sharper, higher-resolution version of an existing video clip.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the video
+## Upscale
 
-This runs on a video output already on TITLES (its `output_id`):
+No dedicated tool for this one — it's the video upscale operator, `vidUpscaleNode`, via the generic path: `titles_get_operator({ operator_id: "vidUpscaleNode" })` for the live input shape, an upscaler from `titles_search_models({ operator: "vidUpscaleNode" })`, then `titles_run_execution`. No prompt — never regenerate to "upscale," that makes a different clip.
 
-- "this one" / "the clip I picked" → `titles_get_selection`.
-- Their recent work → `titles_list_outputs`; from the feed → `titles_search_feed({ media_type: "video" })` / `titles_get_feed_item`.
-- Not on TITLES yet? An outside video can't be brought in via MCP — make it on TITLES first (generate-video / animate-image).
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Pick the upscaler
+## Deliver the file
 
-No dedicated tool — pick a video upscaler:
-
-- `titles_search_models({ operator: "vidUpscaleNode" })` — each result carries the `{ model_id, adapter_id }` selector. This is an upscaler model, not the model the clip was made with.
-
-## 3. Upscale
-
-```
-titles_run_execution({
-  operator_id: "vidUpscaleNode",
-  inputs: {
-    video: { output_id },              // the clip to enlarge
-    model: { model_id, adapter_id }    // from step 2
-  },
-  session_id?
-})
-```
-
-No prompt — never regenerate to "upscale," that makes a different clip. If **`price_confirmation_required`** comes back, relay the exact `cost_usd`, get the user's OK, then re-call with `max_price_usd` (never set it without approval). Reuse `session_id`.
-
-## 4. Deliver
-
-- Renders take a while — several `titles_await_execution` re-entries, then `titles_get_execution`.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "mp4" })` — host-adaptive.
-
-## Etiquette
-
-One clip out, its cost, link and file. No play-by-play while it renders.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

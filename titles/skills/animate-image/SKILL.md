@@ -20,38 +20,18 @@ description: >
 
 # animate-image
 
-Turn a still image into a short video clip — camera moves, subject motion, optional audio.
+Turn a still image into a short video clip.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the image
+## Animate
 
-`titles_animate_image` takes an `output_id` — an image already on TITLES:
+One call: `titles_animate_image` with the still's `output_id`; the prompt is the motion (camera move, subject action) — the image already provides the look.
 
-- "this one" / "the one I picked" → `titles_get_selection` (explicit selection only — never resolve "the first one" from it; ask or list).
-- Their recent work → `titles_list_outputs`; from the feed → `titles_search_feed` / `titles_get_feed_item`.
-- Not on TITLES yet? An outside image can't be brought in via MCP — generate the still on TITLES first (generate-image), then animate it.
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Animate
+## Deliver the file
 
-Call `titles_animate_image({ output_id, prompt, duration?, audio?, model_id?, session_id? })`.
-
-- **Prompt is the motion**, not the scene: "slow dolly-in as rain falls", "the cat turns its head and blinks". The image already provides the look.
-- `duration` (string seconds, e.g. `"4"`, `"8"`) and `model_id` are model-specific — omit for defaults; a specific video model comes from `titles_search_models({ operator: "img2VidNode" })` (a video model, NOT the artist model the still was made with). An unsupported `duration` returns the allowed list.
-- `audio: true` adds generated audio on models that support it (others return an error naming the limit). Default is silent.
-- Reuse the source `session_id` so the clip lands on the same canvas.
-
-Video clears the confirmation threshold, so expect **`price_confirmation_required`** back on the first call — that's the quote, nothing has run or charged. Relay the exact `cost_usd`, get the user's OK, then re-call the same tool with `max_price_usd` set to the approved amount (never set it without approval).
-
-## 3. Deliver
-
-- Video renders are long — expect several `titles_await_execution` re-entries before it finishes, then `titles_get_execution`.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "mp4" })` — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-One quote before spending, one clip out, its cost, the link and file. No play-by-play while it renders.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

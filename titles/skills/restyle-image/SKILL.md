@@ -20,38 +20,18 @@ description: >
 
 # restyle-image
 
-Reinterpret a whole image in a new style — "as a watercolor," "in this artist's style" — keeping its subject.
+Reinterpret a whole image in a new style — keeping its subject.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Get the image
+## Restyle
 
-`titles_restyle_image` takes one `output_id` — an image already on TITLES:
+One call: `titles_restyle_image` with the image's `output_id` and the target style as the prompt — restate the subject to keep, or the style swamps the content. Comparing many artist styles at once is **style-explorer**'s job — hand off rather than looping models here.
 
-- "this one" / "the one I picked" → `titles_get_selection` (explicit selection only — never resolve "the first one" from it; ask or list).
-- Their recent work → `titles_list_outputs`; from the feed → `titles_search_feed` / `titles_get_feed_item`.
-- Not on TITLES yet? An outside image can't be brought in via MCP — offer to generate one first (generate-image), or have them add it in the studio.
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-## 2. Restyle
+## Deliver the file
 
-Call `titles_restyle_image({ output_id, prompt, strength?, model_id?, session_id? })` — submit directly (cheap; don't pre-ask cost). Read `cost_usd` and mention it; handle `price_confirmation_required` by relaying the exact price, getting approval, then re-calling with `max_price_usd`.
-
-- **Prompt is the target style** ("watercolor illustration", "gritty film noir") — restate the subject to keep ("keeping the two cats"), especially at higher strength, or the style swamps the content.
-- **`strength`** runs `minimal → slight → moderate (default) → strong → extreme` — how far the result may drift from the source.
-- **`model_id`**: omit for a default fitted from the prompt (usually right). To restyle into a specific artist's style, find it with `titles_search_models({ operator: "img2ImgNode" })` and credit the artist by name with their `model_url`.
-- Reuse the source `session_id` so the restyle lands on the same canvas.
-
-Comparing several artist styles at once is **style-explorer**'s job — hand off rather than looping models here.
-
-## 3. Deliver
-
-- `titles_await_execution` → `titles_get_execution` for the finished output.
-- The `session_url` (canvas) — raw output URLs 403.
-- The file via `titles_download_asset({ output_id, format: "png" })` — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-Run without asking twice. One link, one file, short summary — no play-by-play.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.

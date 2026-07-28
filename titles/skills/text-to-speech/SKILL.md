@@ -20,37 +20,16 @@ Literal text → spoken audio.
 
 ## Get connected
 
-Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop.
+Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Take the text
+## Speak
 
-The `text` is spoken **verbatim** — it's not a creative prompt, so pass exactly what the user wants said. Given a script, use it as-is; given a description, draft it and confirm the wording before spending (they're paying to hear their words, not your paraphrase).
+One call: `titles_generate_speech` — the `text` is spoken verbatim, so pass exactly what the user wants said. Given a description instead of a script, draft the wording and confirm it before spending: they're paying to hear their words, not your paraphrase.
 
-## 2. Speak it
+You can't hear the result — hand over the listen link and let the user judge.
 
-Two ways in, depending on what this connection exposes — submit directly either way (don't pre-ask cost):
+The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
-- **Dedicated tool, if present:** `titles_generate_speech({ text, voice?, language?, speed?, model_id?, session_id? })` — resolves voice/language/speed server-side; omit them for the model's defaults.
-- **Otherwise (the speech operator):** pick a voice model with `titles_search_models({ operator: "txt2SpeechNode" })`, then `titles_resolve_input_constraints({ operator_id: "txt2SpeechNode", adapter_id })` — it returns the allowed `voice`, `language`, and `speed` for that model (they're required, and don't carry across models). Pick from those (the user's choice, else a neutral default), then:
-  ```
-  titles_run_execution({
-    operator_id: "txt2SpeechNode",
-    inputs: { model: { model_id, adapter_id }, prompt: text, voice, language, speed },
-    session_id?
-  })
-  ```
-  (In the operator, the spoken text is the `prompt` input.)
+## Deliver the file
 
-Read `cost_usd` (speech is cheap — priced per character) and mention it; handle `price_confirmation_required` with the relay-approve-`max_price_usd` flow.
-
-## 3. Deliver
-
-No inline preview for audio. `titles_await_execution` to confirm completion, then:
-
-- The `session_url` to **listen**.
-- The file via `titles_download_asset({ output_id, format: "mp3" })` (or `wav`) — host-adaptive (disk on Claude Code/Codex, link on chat hosts).
-
-## Etiquette
-
-Confirm the exact words before spending, submit, report cost, deliver a listen link and a file.
-
+Besides the `session_url` the server points you at, hand over the actual file via `titles_download_asset` — host-adaptive: on a shell host (Claude Code / Codex) `curl` it to disk and give the path; on a chat host (claude.ai / mobile) give the short-lived link to click, re-fetching cheaply if it expires.
