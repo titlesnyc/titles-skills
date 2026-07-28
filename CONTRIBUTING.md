@@ -1,9 +1,10 @@
 # Contributing to titles-skills
 
-Public, external-facing skills for the **TITLES MCP** (`mcp.titles.xyz/mcp`). Each
-skill wraps one TITLES creative intent — generate/edit/restyle/upscale an image,
-make or transform video, speech, music — so an agent can drive the TITLES tools
-correctly on a user's behalf.
+Public, external-facing skills for the **TITLES MCP** (`mcp.titles.xyz/mcp`),
+packaged as a Claude plugin marketplace. Each skill wraps one TITLES creative
+intent — generate/edit/restyle/upscale an image, make or transform video,
+speech, music — so an agent can drive the TITLES tools correctly on a user's
+behalf.
 
 This is the **public** counterpart to the internal `titlesnyc/titles-internal-skills`
 marketplace. Internal process/ops skills and the browser-driven Studio automation
@@ -13,27 +14,36 @@ is only the portable, pure-MCP tool-use skills anyone can install.
 ## Layout
 
 ```
-skills/<skill-name>/SKILL.md      # one skill; name in frontmatter == directory
-scripts/validate_skills.py        # CI + local validation
-.github/workflows/validate.yml    # runs the validator on push/PR
+.claude-plugin/marketplace.json        # lists every plugin (currently: titles)
+titles/.claude-plugin/plugin.json      # the titles plugin manifest
+titles/skills/<skill-name>/SKILL.md    # one skill; name in frontmatter == directory
+titles/README.md                       # the plugin's skill roster
+scripts/validate_skills.py             # CI + local validation
+.github/workflows/validate.yml         # runs the validator on push/PR
 ```
 
-Flat by design: installable with `npx skills add titlesnyc/titles-skills`, and for
-Claude Code by pointing at `skills/<name>`.
+Today there's one plugin, `titles`. Add more plugins (e.g. to split a large set)
+by creating a sibling dir with its own `.claude-plugin/plugin.json` and listing it
+in `marketplace.json`.
 
 ## Adding a skill
 
 1. **One job per skill.** Keep it narrow; compose by chaining, not by building
    mega-skills.
-2. **Write the description for triggering.** Third person, specific, with explicit
+2. **Put it under a plugin:** `titles/skills/<skill-name>/SKILL.md`.
+3. **Write the description for triggering.** Third person, specific, with explicit
    "Use when the user says…" trigger phrases and a closing `NOT for:` line that
    names the sibling skills it should defer to. With a library this size,
    description overlap is the #1 failure mode — every skill must be distinguishable
-   from its neighbors by its description alone.
-3. **Respect the 1024-char description cap** (Anthropic hard limit). Long-tail
-   keywords belong in the README, not the description.
-4. **`name:` is required** and must match the directory — claude.ai zip upload has
+   from its neighbors by its description alone. Cross-reference only skills that
+   actually ship.
+4. **Respect the 1024-char description cap** (Anthropic hard limit). Long-tail
+   keywords belong in a README, not the description.
+5. **`name:` is required** and must match the directory — claude.ai zip upload has
    no directory-name fallback.
+6. **Bump versions:** update the plugin's `version` in its `plugin.json` and the
+   matching entry in `marketplace.json`.
+7. **Add it to `titles/README.md`.**
 
 ## Frontmatter conventions
 
@@ -77,16 +87,18 @@ description: >
 ## Before you merge
 
 - Run the validator: `python3 scripts/validate_skills.py`
-- Benchmark triggering (e.g. `skill-creator`'s harness) so the new skill fires on
-  its own intents and doesn't poach a sibling's.
+- Benchmark triggering (e.g. `skill-creator`'s harness, or a routing test across
+  the roster) so the new skill fires on its own intents and doesn't poach a
+  sibling's.
 
 ## Validation
 
 CI runs `scripts/validate_skills.py` on every push and PR. It enforces:
 
-- `skills/` contains only skill directories (a loose file — a stray `.zip`
-  especially — silently breaks claude.ai sync);
+- `marketplace.json` + every `plugin.json` are valid, with matching names;
+- every plugin dir on disk is listed in the marketplace;
+- each plugin's `skills/` contains only skill directories (a loose file — a stray
+  `.zip` especially — silently breaks claude.ai sync);
 - every `SKILL.md` has frontmatter with `name:` (matching its directory) and
-  `description:`;
-- descriptions stay within the 1024-char cap;
+  `description:`, within the 1024-char cap;
 - no committed junk (`.DS_Store`, `*.zip`, `*.skill`).

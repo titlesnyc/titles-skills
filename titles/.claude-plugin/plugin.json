@@ -1,0 +1,8 @@
+{
+  "name": "titles",
+  "version": "0.1.0",
+  "description": "titles.xyz creative tools on the TITLES MCP — generate, edit, restyle, upscale, vary, and blend images; text-to-video, animate, restyle, and upscale video; music and speech; and promo/motion/curation/style packs. Connects via mcp.titles.xyz/mcp (see the titles-setup skill).",
+  "author": { "name": "TITLES" },
+  "homepage": "https://github.com/titlesnyc/titles-skills",
+  "keywords": ["titles", "titles-xyz", "image-generation", "video-generation", "text-to-speech", "music-generation", "mcp", "creative"]
+}
