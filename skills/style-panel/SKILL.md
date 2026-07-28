@@ -8,9 +8,9 @@ description: |
   "compare artists for this". Picks 4–6 deliberately different artist
   models, generates the same concept through each, presents them side by
   side with artist credit, shows projected cost first, and hands the winner
-  to drop-pack. Runs on the TITLES MCP — if TITLES tools are missing,
+  to promo-pack. Runs on the TITLES MCP — if TITLES tools are missing,
   connect mcp.titles.xyz/mcp first (see titles-setup). NOT for: generating
-  in one known style (generate-image / drop-pack) or browsing artists
+  in one known style (generate-image / promo-pack) or browsing artists
   without generating (find-artist).
 ---
 
@@ -45,7 +45,7 @@ The **same concept prompt** through each artist's model (`titles_generate_image`
 ## 5. Present the board and route the winner
 
 Show all directions together via the `session_url`, each labeled with its artist, credited. Make a recommendation but let the user pick. When they choose:
-- **Build the full set in that style** → hand off to `drop-pack` with the chosen `model_id`.
+- **Build the full set in that style** → hand off to `promo-pack` with the chosen `model_id`.
 - **Follow the artist** → `titles_set_following` so their work surfaces later.
 - **More like this one** → a fresh panel of artists adjacent to the winner.
 

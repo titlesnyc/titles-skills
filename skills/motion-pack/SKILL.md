@@ -9,7 +9,7 @@ description: |
   is priced per second — shows the projected cost before running. Runs on
   the TITLES MCP — if TITLES tools are missing, connect mcp.titles.xyz/mcp
   first (see titles-setup). NOT for: a single still (generate-image), one
-  animation (animate-image), or a still-image set (drop-pack).
+  animation (animate-image), or a still-image set (promo-pack).
 ---
 
 # motion-pack
@@ -24,7 +24,7 @@ Check the tool list for TITLES tools (names contain `titles_`). If missing, hand
 
 Two entry points:
 - **From existing stills** — the user's own outputs (`titles_list_outputs` or `titles_get_selection`) or a drop already made. Use those `output_id`s.
-- **From a concept** — generate the stills first (this is `drop-pack`'s job; run it or its steps, then animate the keepers). Pick the artist via `titles_search_models`, credit them.
+- **From a concept** — generate the stills first (this is `promo-pack`'s job; run it or its steps, then animate the keepers). Pick the artist via `titles_search_models`, credit them.
 
 Settle how many loops (default 3) and the motion intent per still before running. **Which stills and what motion are the user's calls — if either is unclear, ask and stop.** Suggesting motion for a still you can see is fine; inventing the subject or the concept behind the set is not.
 
