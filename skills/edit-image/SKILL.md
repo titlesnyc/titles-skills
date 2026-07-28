@@ -1,6 +1,9 @@
 ---
 name: edit-image
-description: |
+user-invocable: true
+argument-hint: [the change to make]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Edit an image on TITLES (titles.xyz) — change one thing, keep the rest. Use
   when the user says: "edit this image", "remove the background", "change the
   color of…", "add a hat", "replace the sky", "fix this part", "swap X for Y",
