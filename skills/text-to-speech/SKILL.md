@@ -1,6 +1,9 @@
 ---
 name: text-to-speech
-description: |
+user-invocable: true
+argument-hint: [text to speak]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Turn text into spoken audio on TITLES (titles.xyz) — narration, voiceover,
   TTS. Use when the user says: "text to speech", "read this aloud", "voiceover
   for X", "narrate this", "TTS", "make this a voice clip", "say this in a
