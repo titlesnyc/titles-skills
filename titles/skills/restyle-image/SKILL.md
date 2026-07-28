@@ -26,9 +26,13 @@ Reinterpret a whole image in a new style — keeping its subject.
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## Restyle
+## 1. Get the target style, then match a model
 
-One call: `titles_restyle_image` with the image's `output_id` and the target style as the prompt — restate the subject to keep, or the style swamps the content. Comparing many artist styles at once is **style-explorer**'s job — hand off rather than looping models here.
+Ask for the target style if it isn't clear — a look, a medium, or a specific artist. Then match it with `titles_search_models({ operator: "img2ImgNode" })` and pick the best-fitting model (credit the artist); pass its `model_id`. Comparing many artist styles at once is **style-explorer**'s job — hand off rather than looping models here.
+
+## 2. Restyle
+
+One call: `titles_restyle_image` with the image's `output_id`, the chosen `model_id`, and the target style as the prompt — restate the subject to keep, or the style swamps the content.
 
 The connected server is authoritative for everything else — exact inputs, model resolution, cost approval (`price_confirmation_required` → `max_price_usd`), session/canvas handling, sourcing `output_id`s, and bringing outside images in (`titles_create_upload`) all follow the tool's own description and the server instructions, not anything memorized here. `titles_help` has the current catalog.
 
