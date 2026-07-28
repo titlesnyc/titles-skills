@@ -1,6 +1,9 @@
 ---
 name: style-explorer
-description: |
+user-invocable: true
+argument-hint: [optional: a seed style or theme]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Roam the TITLES (titles.xyz) artist-model library — generate a wide, varied
   spread of images across many different artists and many different prompts to
   discover styles and directions. A survey, not a deliverable. Use when the
@@ -53,3 +56,4 @@ Show the board via the `session_url`, **grouped by look/family**, each image cre
 ## Etiquette
 
 Fire fast within the approved budget — this is meant to be a wide, quick survey, not a labored one. One canvas link, the board grouped and every artist credited, and an honest read on what's worth chasing. Range is the deliverable; a spread of near-identical looks is a failed roam.
+
