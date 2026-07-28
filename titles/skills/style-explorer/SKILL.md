@@ -9,7 +9,8 @@ description: >
   discover styles and directions. A survey, not a deliverable. Use when the
   user wants to explore or be shown range: "explore styles", "what styles are
   on TITLES", "surprise me", "show me a range", "wander the catalog", "what
-  can this do", "discover artists by generating", "style exploration". Samples
+  can this do", "discover artists by generating", "what's new on TITLES",
+  "show me new models", "style exploration". Samples
   broadly across the catalog, presents the board grouped by look with each
   artist credited, and points at where to go deeper. Runs on the TITLES MCP —
   if TITLES tools are missing, connect mcp.titles.xyz/mcp first (see
@@ -25,17 +26,19 @@ Roam the TITLES artist library — a wide, varied spread of generations across m
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop. Don't fall back to non-TITLES tools.
 
-## 1. Frame the roam — a seed, not a brief
+## 1. Ask what they want to explore — specific first, breadth second
 
-Exploration is the ask, so you don't need a concept and shouldn't demand one. Take whatever the user offers:
-- **A loose seed** — a theme, medium, mood, subject area, or era ("something dreamlike", "3D creatures", "collage") — bias the roam toward it but keep wandering.
-- **Nothing / "surprise me"** — sample across the catalog's whole range. This is valid here; generating varied prompts and picking styles yourself *is* the feature (the opposite of promo-pack, where inventing a brief is off-limits — there the user has a fixed output in mind; here they've asked to be shown range).
+Exploration is the ask, so you don't need a full concept — but **ask first whether they have something specific in mind**, and only offer the wide-open options if they don't. Route on their answer:
+- **A particular style or direction** — a theme, medium, mood, subject, or era ("something dreamlike", "3D creatures", "art deco"). Bias the roam toward it across several artists, but keep wandering within it.
+- **Only new / recent models** — they want to see what's just landed. Roam the newest additions via `titles_search_models({ sort: "recent" })`.
+- **Specific artists or mediums** — center the roam on those and their neighbors.
+- **No preference / "surprise me"** — *then* offer the full-breadth roam: sample across the catalog's whole range. Valid here; generating varied prompts and picking styles yourself *is* the feature (unlike promo-pack, where inventing a brief is off-limits — there the user has a fixed output in mind; here they've asked to be shown range).
 
-Settle only the breadth (how many images, or a budget) before spending.
+Settle the breadth (how many images, or a budget) before spending.
 
 ## 2. Assemble a wide, diverse set of artists
 
-`titles_search_models` — but the goal is **range, not the top of one query**. Run several different searches across style axes (painterly, 3D, collage, glitch, photographic, illustrative, abstract), and vary the sort (`popularity`, `recent`, `alpha`) so you surface artists a single query would bury. Aim for a spread of architecture, medium, and mood. Note each artist's name and `model_url`.
+Honor the step-1 focus: bias the searches to their style/direction, lead with `sort: "recent"` if they asked for new models, or sweep every axis for "surprise me". Either way the goal is **range, not the top of one query**: run several different searches across style axes (painterly, 3D, collage, glitch, photographic, illustrative, abstract), and vary the sort (`popularity`, `recent`, `alpha`) so you surface artists a single query would bury. Aim for a spread of architecture, medium, and mood. Note each artist's name and `model_url`.
 
 ## 3. Budget → how wide to roam
 
