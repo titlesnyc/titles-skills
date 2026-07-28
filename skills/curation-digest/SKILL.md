@@ -13,7 +13,7 @@ description: >
   Mostly read-only — no generation cost. Runs on the TITLES MCP — if
   TITLES tools are missing, connect mcp.titles.xyz/mcp first (see
   titles-setup). NOT for: generating new images (generate-image /
-  promo-pack) or picking a model to create with (find-artist).
+  promo-pack), or exploring the library by generating (style-explorer).
 ---
 
 # curation-digest
@@ -60,7 +60,7 @@ Save each keeper to the user's library with `titles_set_collection({ kind: "save
 
 ## 5. Deliver the taste report
 
-A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick with both credits, its `published_url`, and one line on *why* it earned the spot — pointing at what's actually in the image, not the title. Say which ones were newly saved vs. already in the library (the `changed` flag). Name what you cut and why; the cuts prove the picks. Close with the pattern you noticed across the set — that's the part a list can't give them. Then offer the next step: generate in this direction (`promo-pack`), explore the range (`style-explorer`), or go deep on one artist (`find-artist`).
+A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick with both credits, its `published_url`, and one line on *why* it earned the spot — pointing at what's actually in the image, not the title. Say which ones were newly saved vs. already in the library (the `changed` flag). Name what you cut and why; the cuts prove the picks. Close with the pattern you noticed across the set — that's the part a list can't give them. Then offer the next step: generate in this direction (`promo-pack`), explore the range (`style-explorer`), or follow an artist to keep their work surfacing (`titles_set_following`).
 
 ## Etiquette
 
