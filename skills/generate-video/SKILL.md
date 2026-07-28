@@ -1,6 +1,9 @@
 ---
 name: generate-video
-description: |
+user-invocable: true
+argument-hint: [scene + motion]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Generate a video on TITLES (titles.xyz) from a text description — a short clip
   built from a prompt, on a video model you pick from the catalog (some trained
   by real artists, credited and paid). Use when the user says: "generate a
