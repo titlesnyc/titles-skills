@@ -1,6 +1,9 @@
 ---
 name: generate-music
-description: |
+user-invocable: true
+argument-hint: [genre / mood / instrumentation]
+# allowed-tools omitted by design — the titles_* MCP prefix varies by connection (mcp__titles__ / mcp__titles-staging__ / a claude.ai connector), so pinning tools would break portability
+description: >
   Compose an original music track on TITLES (titles.xyz) from a text
   description. Use when the user says: "make music", "generate a track", "a
   beat", "background music for X", "an instrumental", "lofi for a podcast
