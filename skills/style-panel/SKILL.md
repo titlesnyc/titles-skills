@@ -34,7 +34,9 @@ Get the concept (what to make) from the user. The whole point is divergence, so 
 
 ## 3. Quote the cost, then confirm
 
-One probe generation, read `cost_quote.total_usd`, project across the panel (≈ per-image × panel size), show it, get a go or a cap. Single gate.
+One probe generation — **the submit response carries `cost_usd` immediately**, so you can quote before the render finishes (older responses nest it as `cost_quote.total_usd`; read whichever comes back). A panel holds one aspect ratio throughout, so a flat probe × panel-size is accurate here. Show it, get a go or a cap. Single gate.
+
+Cost also varies by model: the panel spans several artists, so if their architectures differ the per-image price will too (observed range ~$0.03–$0.09). Quote from the priciest probe, or say the number is approximate.
 
 ## 4. Generate one concept per artist
 

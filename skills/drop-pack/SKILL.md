@@ -43,11 +43,19 @@ Default asset list when the user doesn't specify: **1 hero (1:1), 2 variations (
 
 ## 3. Quote the cost, then confirm
 
-Run **one** probe generation (`titles_generate_image`, the hero), `titles_await_execution` → `titles_get_execution`, read its `cost_quote.total_usd`. Project the full set (≈ per-image × asset count) and show it: "5 assets ≈ $X.XX total, artist royalty included." Get a one-word go, or a cap. This is the only confirmation gate — after it, run without asking again.
+Run **one** probe generation (`titles_generate_image`, the hero). **The submit response carries the run's cost immediately** — read `cost_usd` off it; you don't need to await the render to quote. (Older responses nested this as `cost_quote.total_usd` with a royalty breakdown; read whichever the server returns.)
+
+**Cost scales with pixel count, so project per aspect ratio, not flat × N.** A square costs roughly 1.8× a 16:9 or 9:16 on the same model (observed: $0.055 vs $0.031 on Klein 9B). Multiply the probe by the number of assets *at that ratio*, then add the wide/vertical ones at their own rate — or quote the square rate across the board and tell the user it's the ceiling. Over-quoting is fine; under-quoting isn't.
+
+Show the total ("5 assets ≈ $X.XX, artist royalty included"), get a one-word go or a cap. This is the only confirmation gate — after it, run without asking again.
 
 ## 4. Generate the set
 
-Reuse the probe's `session_id` on every follow-up so the whole drop lands on one canvas, and run generations **one at a time** (parallel calls each open a new canvas). Keep the subject consistent across assets; vary composition/crop per the aspect ratio, not the subject. Stop if cumulative `cost_quote` hits the user's cap.
+Reuse the probe's `session_id` on every follow-up so the whole drop lands on one canvas, and run generations **one at a time** (parallel calls each open a new canvas — the awaits afterwards can run in parallel).
+
+**Hold the style constant; vary the subject.** A drop is a set of *different images that belong together*, not one image at five sizes. Five crops of the same object is a failed drop — it reads as a template. Give each asset its own subject inside the same world: if the hero is the central object, let one variation change the object, one change the setting or scale, the wide one open onto the wider environment, the vertical one find a different form entirely. The artist model supplies the consistency for free — that's what it's for — so spend your prompt variety on *what's depicted*.
+
+Stop if cumulative cost hits the user's cap.
 
 ## 5. Review and publish
 

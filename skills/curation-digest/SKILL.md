@@ -62,3 +62,5 @@ A short write-up *is* the collection: the keep ratio ("5 of 11"), then each pick
 ## Etiquette
 
 No generation, no spend — so no cost gate. Be opinionated in the picks; a curation report that saves everything isn't curation.
+
+If the user pivots from curating to *making* ("now generate one like these"), that's `drop-pack` or `style-panel` — hand off rather than generating here, so the cost gate those skills carry isn't skipped.

@@ -32,7 +32,9 @@ Settle how many loops (default 3) and the motion intent per still before running
 
 Pick **one** video model and **one** duration for the whole set and reuse them on every clip. If you let each call auto-fit (omit `model_id`/`duration`), the server picks a different model/length per prompt and the cost swings clip to clip — a single-clip probe then under-quotes the set, and the loops feel mismatched. Find a video model with `titles_search_models({ operator: "img2VidNode" })`; keep the duration short unless asked.
 
-Then probe: animate **one** still with that fixed `model_id` + `duration`. `titles_await_execution` (several re-entries — video is slow; note `cost_quote` is populated while the clip is still `running`, so you can read the price before the render finishes). Read `cost_quote.total_usd`, project the set (per-clip × count — now representative because the model is pinned), and show it plainly: "3 clips ≈ $X.XX, video is per-second." Get an explicit go or a cap. Never skip this — motion-pack is the most expensive skill.
+Then probe: animate **one** still with that fixed `model_id` + `duration`. **The submit response carries the run's cost immediately** — read `cost_usd` off it (older responses nest it as `cost_quote.total_usd`, and it's populated while the clip is still `running`), so you can quote before waiting out the render. Project the set (per-clip × count — representative now that the model is pinned) and show it plainly: "3 clips ≈ $X.XX, video is per-second." Get an explicit go or a cap. Never skip this — motion-pack is the most expensive skill.
+
+A video run priced above the server's confirmation threshold won't execute: it returns `price_confirmation_required` with the exact cost instead. That's the same gate arriving from the server side — relay the price, and only re-call with `max_price_usd` set to what the user approved.
 
 ## 3. Animate the rest of the set
 
