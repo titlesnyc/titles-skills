@@ -24,96 +24,111 @@ description: >
 
 A song → a character-driven, beat-cut music video. Two tiers, one skill:
 
-- **Portable (pure MCP, any surface):** plan scenes → generate a hero and hold the
-  character consistent → animate each scene → score to a supplied track or an
-  original bed → deliver the clips + an ordered canvas sequence.
-- **Local finisher (Claude Code, opt-in):** the signature parts — beat/tempo
+- **Portable (pure MCP, any surface):** understand the song → plan the story → generate a
+  hero and hold the character across scenes → animate each → score to a track → deliver the
+  clips + an ordered canvas sequence.
+- **Local finisher (Claude Code, opt-in):** the signature parts — precise beat/tempo
   detection, word-level lyric sync, a lookbook + storyboard PDF, and a beat-synced
-  **stitched render**. Needs `ffmpeg` + a small Python venv; degrades gracefully to
-  the portable tier where those aren't installed.
+  **stitched render**. Needs `ffmpeg` + a small Python venv; degrades gracefully off Claude Code.
 
 Video is priced per second and costs far more than stills — the cost gate matters.
+
+## The order matters: understand → treatment → footage
+
+You can't write the story until you understand the song, and you can't shoot until the story
+exists — so **understanding gates everything downstream, and footage is generated *to* a plan,
+never the reverse.** Two entry paths, both of which end up analyzing a real track before the
+plan locks:
+
+- **Song-first (supplied track):** analyze + transcribe it, then reverse-engineer the treatment from it.
+- **Story-first (no track yet):** form the concept, author the lyrics, let **`generate-music`**
+  render the song (words known by construction), then **re-analyze the rendered track** for the
+  exact beat/word timings before locking the treatment.
 
 ## Setup
 
 - **MCP (required):** if the `titles_*` tools are missing, connect first — see `titles-setup`.
-- **Local finisher (optional):** `bash scripts/setup.sh .mv-venv` — creates a venv
-  (numpy, demucs, faster-whisper, matplotlib, pillow); `ffmpeg` must be on PATH
-  (`brew install ffmpeg`). Only needed for the beat/lyric cut, the PDFs, and the
-  stitched render. Skip it and the skill still runs MCP-only.
+- **Local finisher (optional):** `bash scripts/setup.sh .mv-venv` (venv: numpy, demucs,
+  faster-whisper, matplotlib, pillow); `ffmpeg` on PATH (`brew install ffmpeg`). Only needed
+  for precise analysis, the PDFs, and the stitched render. Skip it and the skill runs MCP-only.
 
 ## Phase 0 — Preflight
 
-`titles_get_me` (auth), confirm the account can spend, and settle the track: the user
-supplies one, **or** generate an original bed/song with **`generate-music`** (instrumental,
-or a full vocal via its `lyrics` input). Decide before generating footage — it drives pacing.
+`titles_get_me` (auth), confirm the account can spend, and settle the song: a supplied track,
+or one from `generate-music` (instrumental, or a full vocal via its `lyrics`). Pick the entry
+path above before generating anything.
 
-## Phase 1 — Footage (MCP · portable)
+## Phase 1 — Understand (before anything is generated)
 
-1. **Hero + character consistency.** Generate one hero still with `generate-image` (a real
-   artist model). Hold the character **scene to scene** by editing that hero into each new
-   setting with **`edit-image`** (pixel-locked identity — Nano Banana Pro's `excels_at` lists
-   *character-consistency*), rather than re-rolling from scratch. Lighter fallback: reuse one
+Get the song's words and shape. **Local finisher:** `analyze_audio.py` (tempo, beat grid,
+energy/section map) and `transcribe.py --isolate` (Demucs vocal → word-level timestamps →
+`lyrics.json`). If the user already has the lyrics, use those; transcription is for the
+timings. **MCP-only:** work from the provided lyrics and coarse sections by ear.
+
+Read four signals: **structure** (intro/verse/chorus/bridge/drop = your act breaks),
+**energy arc** (the emotional shape — where to hold vs. cut fast), **lyric imagery/theme**
+(the world + per-line scene ideas), and **repetition** (the hook recurs → the video should
+recur too).
+
+## Phase 2 — Treatment (author the story from the song)
+
+Synthesize a **beat sheet before any generation**: a through-line, a recurring character, a
+**section → scene map** with timecodes, a **pacing plan** (long holds in verses, fast cuts +
+the biggest scenes on the drop, a landing shot on the outro), and a **motif** that returns on
+every chorus (what makes N clips feel like one film). This is the pre-`edit.json`.
+
+```bash
+.mv-venv/bin/python scripts/build_treatment.py analysis.json lyrics.json treatment.md "Title"
+```
+scaffolds the sheet (sections × timecodes × the lyric over each) with blank **Scene** and
+**Motif** columns to fill. Generate footage to this sheet; don't retrofit a story onto random clips.
+
+## Phase 3 — Footage (generate to the treatment)
+
+1. **Hero + character consistency.** Generate the hero still (`generate-image`, one artist
+   model), then hold the character **scene to scene** by editing it into each setting
+   (`edit-image` — Nano Banana Pro excels at character-consistency). Lighter fallback: one
    `model_id` + a **verbatim character descriptor** in every prompt (see Craft rules).
-2. **Review the stills before animating** — stills cost ~10× less than clips. On Claude Code,
-   build the lookbook PDF (`build_lookbook_pdf.py`); on MCP-only surfaces, review on the
-   canvas. Approve/swap here, not after.
-3. **Animate** each approved still (`animate-image`). **Pin one video model + duration +
-   aspect** so clips concatenate cleanly. For **clip-to-clip continuity**, use
-   **first-&-last-frame** (feed the previous clip's last frame as the start frame → seamless
-   motion), or pass the hero as a **reference image** so each clip re-grounds the character.
-4. **Optional audio-reactive / SFX:** some video models accept a `background_audio` input
-   (animate in time to the track/stem) and a `generate_audio` flag (per-clip foley). Confirm
-   support with `titles_resolve_input_constraints`.
-5. **Download:** prefer **`titles_download_asset({ output_id, format })`** (short-lived,
-   no-auth URL). `scripts/fetch.sh` (adds a `Referer` header for the signed CDN URL) is a
-   local-only fallback if you're scripting the pull.
+2. **Review the stills before animating** — stills cost ~10× less than clips. Local:
+   `build_lookbook_pdf.py`; MCP-only: review on the canvas. Approve/swap here.
+3. **Animate** each approved still (`animate-image`), **pinning one video model + duration +
+   aspect**. Continuity **clip to clip** via first-&-last-frame (previous clip's last frame →
+   next start) or a **reference image** to re-ground the character. Optional `background_audio`
+   for audio-reactive motion; `generate_audio` for per-clip foley (confirm via `titles_resolve_input_constraints`).
+4. **Download:** `titles_download_asset({ output_id, format })`; `scripts/fetch.sh` is a
+   local-only fallback.
 
-## Phase 2 — Music & lyrics
+## Phase 4 — Assemble
 
-- **Track:** the user's own, or one from `generate-music`. Because you can author the
-  lyrics, timing/scene-mapping is exact.
-- **Local finisher:** `analyze_audio.py` (tempo, beat grid, energy/section map) and
-  `transcribe.py --isolate` (Demucs vocal stem → word-level timestamps → `lyrics.json`).
-  If the user already has the lyrics, use those; transcription is for the timings. Chant /
-  abstract lyrics map to a **theme-world**, not line-by-line.
+- **Portable:** hand back the clips + an **ordered canvas sequence** (reuse one `session_id`).
+- **Local finisher:** `assemble.py edit.json` cuts to the treatment's grid (motion-onset trim,
+  downbeat phase, favor-the-beat, stretch-only-when-forced), muxes the track, writes `edl.json`.
+  Aspect configurable (`out_w/out_h/fit` → 9:16); clip lengths auto-probed.
 
-## Phase 3 — Assemble
+## Phase 5 — Storyboard review
 
-- **Portable:** hand back the animated clips + an **ordered canvas sequence** (reuse one
-  `session_id`) for the user to finish in an editor.
-- **Local finisher:** `assemble.py edit.json` cuts to the grid (motion-onset trim, downbeat
-  phase, favor-the-beat durations, stretch-only-when-forced), muxes the track, and writes
-  `edl.json`. Output aspect is configurable (`out_w/out_h/fit` → 9:16); clip lengths auto-probed.
-
-## Phase 4 — Review
-
-- **Local:** `build_review_pdf.py edl.json lyrics.json storyboard.pdf` — one row per shot
-  (thumbnail · time · scene · lyric). Iterate the cut without regenerating clips.
-- **Portable:** the ordered canvas sequence link.
+`build_review_pdf.py edl.json lyrics.json storyboard.pdf` — one row per shot (thumbnail · time ·
+scene · lyric) — confirm the as-built cut matches the treatment; iterate without regenerating.
+So there are **two storyboards**: the *treatment* (the plan, Phase 2) and this *as-built*
+storyboard; the lookbook is the stills gate between them. Portable surfaces review the canvas sequence.
 
 ## Continuity techniques
 
 - **Scene → scene (identity):** `edit-image` edit-from-hero (tightest); or one model + a
   verbatim descriptor (cheapest). Nano Banana Pro is the character-consistency workhorse.
-- **Clip → clip (motion):** first-&-last-frame chaining (last frame of clip N = first frame
-  of clip N+1); or reference-image video to re-ground the character each clip.
+- **Clip → clip (motion):** first-&-last-frame chaining; or reference-image video per clip.
 
 ## Finishing & extras
 
-`upscale-video` for a crisp final (or `upscale-image` on the hero); `restyle-video` to unify
-a look across clips; `generate-image` via a text-strong model for a **title card / lyric
-type**; `blend-images` for double-exposure transitions.
+`upscale-video` for a crisp final (or `upscale-image` on the hero); `restyle-video` to unify a
+look; a text-strong model for a **title card / lyric type**; `blend-images` for transitions.
 
 ## Craft rules
 
-- **Motion can't animate a static pose** — bake the action into the still (riding, leaping,
-  mid-splash), then prompt the motion that continues it.
-- **Character lock = one model + a verbatim descriptor** (or `edit-image` from a hero).
-- **Pick the model by its tags** (`subjects` / `excels_at` / `style`); flux for busy scenes,
-  sdxl reads storybook.
-- **Distinct clips over reuse** — one clip per shot; if you must reuse, pull a different
-  section, and budget for enough clips first.
+- **Motion can't animate a static pose** — bake the action into the still, then prompt the motion that continues it.
+- **Character lock** = `edit-image` from a hero, or one model + a verbatim descriptor.
+- **Pick the model by its tags** (`subjects` / `excels_at` / `style`); flux for busy scenes, sdxl reads storybook.
+- **Distinct clips over reuse** — one clip per shot; if you must reuse, pull a different section, and budget for enough clips first.
 
 ## Cost
 
@@ -123,6 +138,6 @@ count and projected spend before a batch — video dominates the cost.
 
 ## Bundled scripts (local finisher)
 
-`setup.sh` · `fetch.sh` · `analyze_audio.py` · `transcribe.py` · `assemble.py` ·
-`build_review_pdf.py` · `build_lookbook_pdf.py` · `templates/edit.example.json`. All opt-in;
-none run on a pure-MCP surface.
+`setup.sh` · `fetch.sh` · `analyze_audio.py` · `transcribe.py` · `build_treatment.py` ·
+`assemble.py` · `build_review_pdf.py` · `build_lookbook_pdf.py` · `templates/edit.example.json`.
+All opt-in; none run on a pure-MCP surface.
