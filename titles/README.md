@@ -39,6 +39,7 @@ the TITLES tools aren't connected yet.
 |---|---|
 | `promo-pack` | A full set of promo/campaign assets in one style, sized per channel |
 | `motion-pack` | An artist's stills → a set of short motion loops |
+| `music-video` | A song → a character-driven, beat-cut music video (MCP pack + optional local finisher) |
 | `curation-digest` | Browse the feed, save the best in a style, with a taste report |
 | `style-explorer` | Roam the artist library — a wide, varied spread to discover styles |
 

@@ -1,0 +1,30 @@
+{
+  "audio": "track.mp3",
+  "clips_dir": "clips",
+  "out": "music-video.mp4",
+  "fps": 24,
+  "phase": 0.14,
+  "fade_out": 0.6,
+  "out_w": 1440,
+  "out_h": 1440,
+  "fit": "crop",
+  "clips": {
+    "beach": "01-beach.mp4",
+    "rooftop": "02-rooftop.mp4",
+    "neon": "03-neon.mp4",
+    "hero": "04-hero.mp4"
+  },
+  "labels": {
+    "beach": "Beach",
+    "rooftop": "Rooftop",
+    "neon": "Neon Street",
+    "hero": "Hero"
+  },
+  "edl": [
+    ["beach", 5.12],
+    ["hero", 3.20],
+    ["rooftop", 4.96],
+    ["neon", 2.56, 1.5],
+    ["hero", null]
+  ]
+}
