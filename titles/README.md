@@ -37,6 +37,7 @@ the TITLES tools aren't connected yet.
 ### Creative packs
 | Skill | Job |
 |---|---|
+| `create-character` | Build a reusable character + sheet, then hold them consistent across images |
 | `promo-pack` | A full set of promo/campaign assets in one style, sized per channel |
 | `motion-pack` | An artist's stills → a set of short motion loops |
 | `curation-digest` | Browse the feed, save the best in a style, with a taste report |
