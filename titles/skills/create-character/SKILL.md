@@ -28,11 +28,17 @@ TITLES has no character *training* — identity is held by conditioning on refer
 
 Check the tool list for TITLES tools (names contain `titles_`). If missing, hand off to the **titles-setup** skill and stop — never fall back to a non-TITLES tool.
 
-## 1. Write the character spec — ask, never invent
+## 1. Propose the character, then let them shape it
 
-The character is the **user's** to define. If you don't have it, ask and stop; don't invent a person from a category name ("a mascot" is not a character).
+The character is the user's call — but don't hand them a blank form. If they've only given you a category ("a mascot for my coffee brand"), **offer two or three concrete, specific takes** and invite them to pick, mix, or overrule:
 
-Get as many of these as they'll give, and write them down as one block — this becomes the **Character Anchor**:
+> "A few directions — (a) a 40-ish stocky barista, buzzed dark hair, gold hoop in the left ear, forest-green canvas apron; (b) a lanky twenty-something with wire glasses and a faded band tee under a denim apron; (c) a silver-haired matriarch, half-moon spectacles, cream linen. Pick one, mix them, or tell me what's off."
+
+Make the options genuinely different and genuinely specific — a vague option isn't a choice. If the user already described their character, skip the proposing and use theirs.
+
+**What you must not do is invent silently.** Never assume a character and start generating as if they'd asked for it; the direction has to be visibly theirs, whether they wrote it or picked it. If they reject all your options, ask what to change and offer again — don't stall.
+
+Once it's settled, write it down as one block — this becomes the **Character Anchor**:
 
 - age · gender presentation · ethnicity / skin tone · build
 - hair: color, texture, length, style
@@ -71,7 +77,18 @@ Now make the extra views, each generated **from the anchor** with `titles_edit_i
 - **Expressions:** neutral, a smile, a serious beat. Keep them mild — extreme expressions distort face geometry and confuse later conditioning.
 - **Wardrobe/state variants** only if the story needs them.
 
-Use a model that's good at identity — `titles_search_models({ query: "nano banana", operator: "imgEditNode" })` (Nano Banana Pro self-tags `character-consistency`). **Quote the sheet as a batch before running it** — per-image cost × number of views, one total, get a go.
+### Pick the identity model — and offer the cheaper tier
+
+Identity work needs a model built for it, so **choose on the catalog's own tags, not on price**. Resolve live with `titles_search_models({ operator: "imgEditNode" })` and look for identity tags (`character-consistency`, `character-consistent-edits`, `multi-reference-compositing`); confirm the reference cap with `titles_resolve_input_constraints({ operator_id: "imgEditNode", adapter_id })`. Two tiers, currently:
+
+- **Best identity → Nano Banana Pro** (`character-consistency`, ~14 refs). The default when the likeness matters or the sheet is large.
+- **Cheaper → Qwen Image Edit 2511** (`character-consistent-edits`, `multi-reference-compositing`, ~4 refs) — several times cheaper per image. Real tradeoff: the small ref cap means a **compact sheet** (anchor + ¾ + side + back) and fewer refs per scene, so keep the anchor first and drop the optional views.
+
+Offer the choice with the actual numbers from the live quote — "the full sheet is $X on the high-fidelity model or about $Y on the budget one, which trades reference slots for cost" — and let the user pick.
+
+**Don't reach for a cheap edit model that has no identity tag** (Seedream 5.0 Lite, for instance, is inexpensive and takes plenty of refs but is tagged for style transfer and layouts, not identity). Price is not the selection criterion here.
+
+**Quote the sheet as a batch before running it** — per-image cost × number of views, one total, get a go.
 
 The finished sheet is the deliverable of this phase: a set of `output_id`s that *is* the character. Keep the list; step 5 and every later session feed from it.
 
@@ -93,7 +110,7 @@ Two rules do most of the work:
 - **Never generate a scene from the previous scene's output.** Always go back to the anchor/sheet. Chaining compounds drift — every hop is a fresh chance for the face to move.
 - **Assign roles to the references explicitly.** Multi-reference models do **not** infer what each image is for. Say it: "use image 1 for the face and hair, image 2 for the outfit, keep the character from these references and place them in ⟨scene⟩." Unlabeled refs bleed pose, lighting and background from whichever image the model latches onto.
 
-Cap the number of refs at the model's resolved limit, and lead with the anchor.
+Cap the number of refs at the model's resolved limit and lead with the anchor — on a small-cap model (e.g. Qwen's ~4) send the anchor plus the views the shot actually needs: the profile for a side shot, the wardrobe view when the outfit is on show.
 
 ## 6. Check for drift before you deliver
 
@@ -124,5 +141,5 @@ Say these up front rather than letting the user discover them:
 
 ## Etiquette
 
-Ask for the character, never invent one. Gate at the anchor (cheap) rather than after a full set (not cheap). Quote batches before running them, report the running cost, credit the artist, and hand back a character the user can reuse tomorrow.
+Propose a character rather than demanding a spec — but never assume one silently. Gate at the anchor (cheap) rather than after a full set (not cheap). Quote batches before running them, offer the cheaper identity model with real numbers, report the running cost, credit the artist, and hand back a character the user can reuse tomorrow.
 
