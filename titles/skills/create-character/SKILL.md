@@ -22,7 +22,7 @@ description: >
 
 Build a character once, then reuse them. Identity comes from **reference images**, style comes from an **artist model**, and the scene is the only thing that changes per shot.
 
-TITLES has no character *training* — identity is held by conditioning on reference images. That's a strength here, not a workaround: the reference caps are big enough to carry a whole character sheet (Nano Banana Pro takes **up to 14** reference images), and there's no dataset to curate, no training fee, and no wait. Verify the live cap for your chosen model with `titles_resolve_input_constraints({ operator_id: "imgEditNode", adapter_id })` rather than assuming this number.
+TITLES has no character *training* — identity is held by conditioning on reference images. That's a strength here, not a workaround: the reference caps are big enough to carry a whole character sheet (Nano Banana Pro takes **up to 14** reference images), and there's no dataset to curate, no training fee, and no wait. Caps and model names move, so treat the number above as illustrative and read the live one in step 4 rather than assuming it.
 
 ## Get connected
 
@@ -79,7 +79,7 @@ Now make the extra views, each generated **from the anchor** with `titles_edit_i
 
 ### Pick the identity model — and offer the cheaper tier
 
-Identity work needs a model built for it, so **choose on the catalog's own tags, not on price**. Resolve live with `titles_search_models({ operator: "imgEditNode" })` and look for identity tags (`character-consistency`, `character-consistent-edits`, `multi-reference-compositing`); confirm the reference cap with `titles_resolve_input_constraints({ operator_id: "imgEditNode", adapter_id })`. Two tiers, currently:
+Identity work needs a model built for it, so **choose on the catalog's own tags, not on price**. Resolve live with `titles_search_models({ operator: "imgEditNode" })` and look for identity tags (`character-consistency`, `character-consistent-edits`, `multi-reference-compositing`). Each result carries an `adapter_id` — pass that one through to `titles_resolve_input_constraints({ operator_id: "imgEditNode", adapter_id: <the adapter_id of the model you picked> })` to read its real reference cap before you build the sheet around it. Two tiers, currently:
 
 - **Best identity → Nano Banana Pro** (`character-consistency`, ~14 refs). The default when the likeness matters or the sheet is large.
 - **Cheaper → Qwen Image Edit 2511** (`character-consistent-edits`, `multi-reference-compositing`, ~4 refs) — several times cheaper per image. Real tradeoff: the small ref cap means a **compact sheet** (anchor + ¾ + side + back) and fewer refs per scene, so keep the anchor first and drop the optional views.
