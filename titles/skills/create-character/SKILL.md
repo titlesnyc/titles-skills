@@ -77,6 +77,12 @@ Now make the extra views, each generated **from the anchor** with `titles_edit_i
 - **Expressions:** neutral, a smile, a serious beat. Keep them mild — extreme expressions distort face geometry and confuse later conditioning.
 - **Wardrobe/state variants** only if the story needs them.
 
+**Ask for rotation emphatically, or you won't get it.** The same conditioning that holds a face also holds its angle, so a mild instruction gets a mild turn — "a three-quarter view" typically comes back as a slight head tilt. Over-specify instead: name the degrees, say what the view is *not*, and describe what should be visible.
+
+> "…in a FULL SIDE PROFILE — head and shoulders rotated a complete 90 degrees so he faces the left edge of the frame, only one eye visible, nose and chin in silhouette. This is a strict profile, not a three-quarter view."
+
+That lands a real profile first time. Treat a soft turn as an under-specified prompt to sharpen, not a model limitation to accept.
+
 ### Pick the identity model — and offer the cheaper tier
 
 Identity work needs a model built for it, so **choose on the catalog's own tags, not on price**. Resolve live with `titles_search_models({ operator: "imgEditNode" })` and look for identity tags (`character-consistency`, `character-consistent-edits`, `multi-reference-compositing`). Each result carries an `adapter_id` — pass that one through to `titles_resolve_input_constraints({ operator_id: "imgEditNode", adapter_id: <the adapter_id of the model you picked> })` to read its real reference cap before you build the sheet around it. Two tiers, currently:
@@ -118,7 +124,11 @@ titles_run_execution({
 Two rules do most of the work:
 
 - **Never generate a scene from the previous scene's output.** Always go back to the anchor/sheet. Chaining compounds drift — every hop is a fresh chance for the face to move.
-- **Assign roles to the references explicitly.** Multi-reference models do **not** infer what each image is for. Say it: "use image 1 for the face and hair, image 2 for the outfit, keep the character from these references and place them in ⟨scene⟩." Unlabeled refs bleed pose, lighting and background from whichever image the model latches onto.
+- **Assign roles to the references, and say what NOT to take from them.** Multi-reference models do **not** infer what each image is for, and they will happily copy a reference's plain backdrop, framing and lighting along with the face. Both halves matter:
+
+  > "Use these references for the character's **identity only** — image 1 is the front view of his face, image 2 his three-quarter angle, image 3 his profile. **Do not copy their backgrounds, framing or lighting.** ⟨Character Anchor, verbatim⟩. Place this exact character ⟨scene⟩."
+
+  The negation clause is what lets a sheet of plain studio portraits produce a fully-realised scene. Without it, refs bleed their backdrop and pose from whichever image the model latches onto.
 
 Cap the number of refs at the model's resolved limit and lead with the anchor — on a small-cap model (e.g. Qwen's ~4) send the anchor plus the views the shot actually needs: the profile for a side shot, the wardrobe view when the outfit is on show.
 
@@ -136,7 +146,7 @@ Cap the number of refs at the model's resolved limit and lead with the anchor �
 4. **age and skin tone** — both drift toward whatever the scene context implies
 5. **distinguishing marks** — present, and on the correct side
 
-**B. Did it do what you asked?** Identity can hold perfectly while the instruction is ignored — a strong identity model will often under-rotate a turn, so a "¾ view" comes back as a slight head tilt, and a "side profile" as a ¾. Judge the pose, framing, and action against what you asked for, separately from the likeness.
+**B. Did it do what you asked?** Identity can hold perfectly while the instruction is quietly ignored — the commonest version is an under-rotated turn, where a "¾ view" arrives as a slight head tilt. Judge the pose, framing, and action against what you asked for, separately from the likeness.
 
 ### Then say what you see and offer the re-render
 
@@ -167,7 +177,7 @@ Say these up front rather than letting the user discover them:
 - **Two characters in a close-up blur into each other.** No current platform holds two identities in tight interaction — TITLES included. Keep characters in separate shots, or accept the risk.
 - **There's no seed to lock.** Reference anchoring *is* the reproducibility mechanism here; identical re-runs aren't available, and seeds never held identity anyway (they hold composition).
 - **Reference conditioning is very good, not perfect.** Expect a strong likeness, not a forensic match — the last few percent of fine detail is what trained-model approaches buy elsewhere.
-- **Strong identity models resist big pose changes.** The same conditioning that holds a face also holds its angle: ask for a 45° three-quarter and you'll often get a 20° tilt, ask for a full profile and you'll get a ¾. That trade — likeness over obedience — is usually the one you want, but say so instead of pretending the view is sharper than it is, and expect turnaround views to need a firmer instruction or a second attempt.
+- **Age reads softer than you specify.** Scene generations tend to render a character a few years younger than the Anchor says — check it in the drift pass rather than assuming the number carried.
 
 ## Etiquette
 
