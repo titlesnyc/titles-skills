@@ -88,22 +88,32 @@ Offer the choice with the actual numbers from the live quote — "the full sheet
 
 **Don't reach for a cheap edit model that has no identity tag** (Seedream 5.0 Lite, for instance, is inexpensive and takes plenty of refs but is tagged for style transfer and layouts, not identity). Price is not the selection criterion here.
 
-**Quote the sheet as a batch before running it** — per-image cost × number of views, one total, get a go.
+**Quote the sheet as a batch before running it** — per-image cost × number of views, one total, get a go. Take the per-image number from a **live submit response** (`cost_usd`), not from a model's advertised compute rate: the real charge includes the platform fee and runs meaningfully higher (a rate implying ~$0.15 billed ~$0.195). If you must quote before any call, quote a range and correct it the moment the first real number lands.
+
+Then generate the views **one at a time**, and **check each one as it lands — step 6.** Don't fire the whole batch blind; a wrong view found at view 1 saves the rest of the budget.
 
 The finished sheet is the deliverable of this phase: a set of `output_id`s that *is* the character. Keep the list; step 5 and every later session feed from it.
 
 ## 5. Generate scenes — always from the sheet
 
-For each scene, pass the sheet as reference images and let the prompt carry only what changes:
+For each scene, pass the sheet as reference images and let the prompt carry only what changes.
+
+**Use the generic path, not `titles_edit_image`.** The intent tool takes a **single** `output_id` and exposes no `outputs_count` — so it can't carry a multi-image sheet, and it defaults to **2 outputs**, silently doubling the bill. Multi-reference work goes through the operator, whose `image` input is the array:
 
 ```
-titles_edit_image({
-  output_id: [<anchor>, <¾>, <side>, ...],   // the sheet — an ARRAY of refs
-  prompt: <role assignment> + <Character Anchor, verbatim> + <the scene>,
-  model_id: <identity model from step 4>,
+titles_run_execution({
+  operator_id: "imgEditNode",
+  inputs: {
+    image: [{ output_id: <anchor> }, { output_id: <¾> }, ...],   // the sheet
+    model: { model_id, adapter_id },                             // both, from search_models
+    prompt: <role assignment> + <Character Anchor, verbatim> + <the scene>
+  },
+  outputs_count: 1,
   session_id
 })
 ```
+
+(`titles_edit_image` is still fine for a **single**-reference edit — building sheet views off the lone anchor, say — but pin cost in mind: it will return 2 outputs.)
 
 Two rules do most of the work:
 
@@ -112,9 +122,13 @@ Two rules do most of the work:
 
 Cap the number of refs at the model's resolved limit and lead with the anchor — on a small-cap model (e.g. Qwen's ~4) send the anchor plus the views the shot actually needs: the profile for a side shot, the wardrobe view when the outfit is on show.
 
-## 6. Check for drift before you deliver
+**Check each scene as it lands and offer the re-render — step 6.**
 
-Look at every result next to the anchor (`titles_get_execution` inlines previews) and check, in this order — these are the things that actually fail:
+## 6. Check every render as it lands — and offer a re-render
+
+**Do this after each generation, not once at the end.** A batch check means the user has already paid for the whole sheet before anyone notices view 2 was wrong. Call `titles_get_execution` (it inlines the preview), actually look at the image, and grade it on two separate axes — they fail independently and have different fixes:
+
+**A. Did identity hold?** Compare against the anchor in this order — it's roughly the order things actually fail:
 
 1. **face** — jaw width, nose, eye spacing, hairline
 2. **hair** — color and style, not just length
@@ -122,7 +136,22 @@ Look at every result next to the anchor (`titles_get_execution` inlines previews
 4. **age and skin tone** — both drift toward whatever the scene context implies
 5. **distinguishing marks** — present, and on the correct side
 
-Name what drifted instead of quietly shipping it. The fix is almost always: regenerate from the anchor (never from the drifted output), add the missing angle to the sheet, or restate the Anchor verbatim where the wording slipped.
+**B. Did it do what you asked?** Identity can hold perfectly while the instruction is ignored — a strong identity model will often under-rotate a turn, so a "¾ view" comes back as a slight head tilt, and a "side profile" as a ¾. Judge the pose, framing, and action against what you asked for, separately from the likeness.
+
+### Then say what you see and offer the re-render
+
+Never quietly accept a miss, and never quietly retry it either — a retry is the user's money. State plainly which axis failed and what you'd change, then **offer the re-render with its price** and let them choose:
+
+> "The side view came back as a ¾ — identity is right (streak, eye sides, sweater all held) but the rotation didn't take. Re-render it at $0.19 with a harder rotation instruction, accept it as-is, or move on?"
+
+When re-rendering, hold these:
+
+- **Re-render from the anchor, never from the failed output.** The bad frame is not a starting point; it's a discard.
+- **Change one variable.** Strengthen the instruction that missed, or swap the model — not both, or you learn nothing about which fixed it.
+- **Cap the attempts.** After two failed tries on the same view, stop spending and say so: offer to drop that view, accept the closest attempt, or switch models. Identity models have real limits (see **Honest limits**) and a third attempt usually buys nothing.
+- **A "good enough" miss is the user's call, not yours.** A soft ¾ is still a usable reference; say it's soft and let them decide whether it's worth $0.19 to sharpen.
+
+Before delivering, do one final pass over the whole set together — some drift only shows up in comparison, like a skin tone that crept warmer across three views that each looked fine alone.
 
 ## 7. Deliver + hand off the character
 
@@ -138,6 +167,7 @@ Say these up front rather than letting the user discover them:
 - **Two characters in a close-up blur into each other.** No current platform holds two identities in tight interaction — TITLES included. Keep characters in separate shots, or accept the risk.
 - **There's no seed to lock.** Reference anchoring *is* the reproducibility mechanism here; identical re-runs aren't available, and seeds never held identity anyway (they hold composition).
 - **Reference conditioning is very good, not perfect.** Expect a strong likeness, not a forensic match — the last few percent of fine detail is what trained-model approaches buy elsewhere.
+- **Strong identity models resist big pose changes.** The same conditioning that holds a face also holds its angle: ask for a 45° three-quarter and you'll often get a 20° tilt, ask for a full profile and you'll get a ¾. That trade — likeness over obedience — is usually the one you want, but say so instead of pretending the view is sharper than it is, and expect turnaround views to need a firmer instruction or a second attempt.
 
 ## Etiquette
 
