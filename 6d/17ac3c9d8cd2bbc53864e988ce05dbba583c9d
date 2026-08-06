@@ -1,0 +1,33 @@
+.claude-plugin/marketplace.json
+  s_21cb515cbca681::t_0a95610a688d86 9,14-15
+.claude-plugin/plugin.json
+  s_21cb515cbca681::t_1cf2fad98d0709 3
+CONTRIBUTING.md
+  s_21cb515cbca681::t_02d9aa198ed837 18-20,25-36
+  s_21cb515cbca681::t_55c44230f6bc94 42
+  s_21cb515cbca681::t_cda2d886b79604 55-58
+README.md
+  s_21cb515cbca681::t_b687adec59b4a6 21-23,25-28,30-32,38,42
+scripts/validate_skills.py
+  s_21cb515cbca681::t_81a48a71a11f9f 99-113,115,119-123,126-131,133-137
+  s_21cb515cbca681::t_f8fcbc891190ff 7-8,11-21,33-36
+  s_21cb515cbca681::t_dc3c54d2ed08b8 149,158-168,171,176,178,182,186,190,192,195,197-202
+SKILLS.md
+  s_21cb515cbca681::t_c7b1ccba880d2f 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6d17ac3c9d8cd2bbc53864e988ce05dbba583c9d",
+  "prompts": {},
+  "sessions": {
+    "s_21cb515cbca681": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2b725533-d3c7-4988-a135-c7d900cc91ae",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Arnav Luthra <arnavl105@gmail.com>"
+    }
+  }
+}
