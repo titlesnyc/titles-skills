@@ -4,11 +4,21 @@
 Run locally:  python3 scripts/validate_skills.py
 In CI:        exits 1 on any error, prints GitHub ::error annotations.
 
-Layout (house style — mirrors titlesnyc/titles-internal-skills):
+Layout: marketplace-root plugin (`"source": "./"`), so `skills/` sits at the repo
+root rather than under a plugin subdirectory:
 
     .claude-plugin/marketplace.json      # lists every plugin
-    <plugin>/.claude-plugin/plugin.json  # plugin manifest
-    <plugin>/skills/<skill-name>/SKILL.md
+    .claude-plugin/plugin.json           # manifest for the root plugin
+    skills/<skill-name>/SKILL.md
+
+A plugin subdirectory (`<plugin>/.claude-plugin/plugin.json` +
+`<plugin>/skills/`) is still supported for any entry whose `source` is not the
+repo root, so both shapes validate.
+
+The root `skills/` layout is deliberate: it is also the default path a Hermes
+skill tap probes (`hermes skills tap add titlesnyc/titles-skills`), and the
+Hermes CLI offers no way to override that path. Moving `skills/` back under a
+plugin subdirectory silently yields an empty tap.
 
 Each check maps to a failure mode that has actually broken skill syncs:
   - marketplace.json + every plugin.json are valid JSON with required fields
@@ -20,6 +30,10 @@ Each check maps to a failure mode that has actually broken skill syncs:
   - frontmatter has name: (required — claude.ai zip upload has no directory
     fallback) and description:, and name matches the directory
   - description stays within Anthropic's hard 1024-character cap
+  - no invisible unicode anywhere in a SKILL.md — Hermes's skill scanner scores
+    zero-width/bidi characters `high`, and at community trust one high finding
+    blocks `hermes skills install` outright (no --force override for a repo we
+    don't control the trust level of)
   - no junk tracked anywhere: .DS_Store, *.zip, *.skill
 """
 import json, re, sys, pathlib
@@ -82,18 +96,45 @@ else:
             if k not in mkt:
                 err(f"marketplace.json missing required key '{k}'", mkt_path)
 
+def local_source_dir(source):
+    """Resolve an entry's `source` to a repo-relative dir, or None if not local.
+
+    `"./"` (or `"."`) means the marketplace root is itself the plugin root, so it
+    resolves to "" — the repo root. A dict source (github/npm/git) is remote and
+    has nothing on disk to validate.
+    """
+    if not isinstance(source, str):
+        return None
+    s = source.strip()
+    if s in ("", ".", "./"):
+        return ""
+    return s.lstrip("./")
+
+
 listed = {}
+plugin_roots = {}   # plugin name -> plugin root dir on disk
 if mkt and isinstance(mkt.get("plugins"), list):
     for entry in mkt["plugins"]:
         name = entry.get("name")
-        src = (entry.get("source") or "").lstrip("./")
-        if not name or not src:
-            err(f"marketplace plugin entry missing name/source: {entry}", mkt_path)
+        if not name:
+            err(f"marketplace plugin entry missing name: {entry}", mkt_path)
+            continue
+        if "source" not in entry:
+            err(f"marketplace plugin entry '{name}' missing source", mkt_path)
             continue
         listed[name] = entry
-        pj = ROOT / src / ".claude-plugin" / "plugin.json"
+        src = local_source_dir(entry.get("source"))
+        if src is None:
+            continue   # remote source — nothing on disk to check
+        pdir = ROOT / src if src else ROOT
+        plugin_roots[name] = pdir
+        pj = pdir / ".claude-plugin" / "plugin.json"
         if not pj.exists():
-            err(f"plugin '{name}': no plugin.json at {src}/.claude-plugin/plugin.json", mkt_path)
+            if entry.get("strict") is False:
+                continue   # strict:false — the marketplace entry is the whole definition
+            rel = f"{src}/" if src else ""
+            err(f"plugin '{name}': no plugin.json at {rel}.claude-plugin/plugin.json "
+                f"(add one, or set \"strict\": false on the entry)", mkt_path)
             continue
         try:
             pjson = json.loads(pj.read_text())
@@ -105,7 +146,7 @@ if mkt and isinstance(mkt.get("plugins"), list):
         if pjson.get("version") != entry.get("version"):
             warn(f"plugin '{name}': version mismatch — plugin.json {pjson.get('version')} vs marketplace {entry.get('version')}", pj)
 
-# --- every plugin dir on disk listed? + per-skill checks ---
+# --- plugin dirs on disk that nothing lists ---
 for pj in ROOT.glob("*/.claude-plugin/plugin.json"):
     pdir = pj.parent.parent
     try:
@@ -114,33 +155,51 @@ for pj in ROOT.glob("*/.claude-plugin/plugin.json"):
         continue
     if pname not in listed:
         warn(f"plugin dir '{pdir.name}' (name '{pname}') not listed in marketplace.json", pj)
+
+# --- per-skill checks, for every plugin root the marketplace points at ---
+# Zero-width and bidi characters: Hermes's scanner scores these `high`, and one
+# high finding blocks install at community trust. Invisible by definition, so a
+# human review will not catch them — see tools/skills_guard.py::INVISIBLE_CHARS.
+INVISIBLE = {
+    "​", "‌", "‍", "⁠", "⁢", "⁣", "⁤",
+    "﻿", "‪", "‫", "‬", "‭", "‮",
+}
+
+for pname, pdir in sorted(plugin_roots.items()):
     skills = pdir / "skills"
     if not skills.is_dir():
+        err(f"plugin '{pname}': no skills/ directory at {skills.relative_to(ROOT)}/", skills)
         continue
     for child in sorted(skills.iterdir()):
         if child.name.startswith("."):
             continue
+        label = child.relative_to(ROOT)
         if not child.is_dir():
-            err(f"loose file in {pdir.name}/skills/: '{child.name}' — skills/ must contain only skill directories", child)
+            err(f"loose file in {skills.relative_to(ROOT)}/: '{child.name}' — skills/ must contain only skill directories", child)
             continue
         skillmd = child / "SKILL.md"
         if not skillmd.exists():
-            err(f"skill '{pdir.name}/{child.name}' has no SKILL.md", child)
+            err(f"skill '{label}' has no SKILL.md", child)
             continue
         fm = frontmatter(skillmd)
         if fm is None:
-            err(f"{pdir.name}/{child.name}/SKILL.md has no YAML frontmatter (must start with '---')", skillmd)
+            err(f"{label}/SKILL.md has no YAML frontmatter (must start with '---')", skillmd)
             continue
         name = fm.get("name", "").strip("\"'")
         if not name:
-            err(f"{pdir.name}/{child.name}/SKILL.md missing 'name:' (required — claude.ai zip upload has no dir fallback)", skillmd)
+            err(f"{label}/SKILL.md missing 'name:' (required — claude.ai zip upload has no dir fallback)", skillmd)
         elif name != child.name:
-            err(f"{pdir.name}/{child.name}/SKILL.md name '{name}' != directory '{child.name}'", skillmd)
+            err(f"{label}/SKILL.md name '{name}' != directory '{child.name}'", skillmd)
         desc = fm.get("description", "")
         if not desc:
-            err(f"{pdir.name}/{child.name}/SKILL.md missing 'description:'", skillmd)
+            err(f"{label}/SKILL.md missing 'description:'", skillmd)
         elif len(desc) > 1024:
-            err(f"{pdir.name}/{child.name}/SKILL.md description is {len(desc)} chars — over Anthropic's 1024 cap", skillmd)
+            err(f"{label}/SKILL.md description is {len(desc)} chars — over Anthropic's 1024 cap", skillmd)
+        for n, line in enumerate(skillmd.read_text(encoding="utf-8").split("\n"), start=1):
+            bad = sorted({f"U+{ord(ch):04X}" for ch in line if ch in INVISIBLE})
+            if bad:
+                err(f"{label}/SKILL.md:{n} invisible unicode ({', '.join(bad)}) — "
+                    f"Hermes scores this 'high' and blocks install at community trust", skillmd)
 
 # --- repo-wide junk ---
 for p in ROOT.rglob("*"):

@@ -15,22 +15,31 @@ is only the portable, pure-MCP tool-use skills anyone can install.
 
 ```
 .claude-plugin/marketplace.json        # lists every plugin (currently: titles)
-titles/.claude-plugin/plugin.json      # the titles plugin manifest
-titles/skills/<skill-name>/SKILL.md    # one skill; name in frontmatter == directory
-titles/README.md                       # the plugin's skill roster
+.claude-plugin/plugin.json             # the titles plugin manifest
+skills/<skill-name>/SKILL.md           # one skill; name in frontmatter == directory
+SKILLS.md                              # the skill roster
 scripts/validate_skills.py             # CI + local validation
 .github/workflows/validate.yml         # runs the validator on push/PR
 ```
 
-Today there's one plugin, `titles`. Add more plugins (e.g. to split a large set)
-by creating a sibling dir with its own `.claude-plugin/plugin.json` and listing it
-in `marketplace.json`.
+The `titles` plugin is the **repo root** (`"source": "./"` in `marketplace.json`),
+so `skills/` sits at the top level rather than under a plugin subdirectory.
+
+Keep it that way. `skills/` at the repo root is also the only path a Hermes skill
+tap probes — `hermes skills tap add titlesnyc/titles-skills` hardcodes `skills/`
+and its CLI has no flag to override it, so moving these under a subdirectory
+silently produces an empty tap for every Hermes user. See "Hermes" in the README.
+
+Adding a second plugin therefore means a sibling dir with its own
+`.claude-plugin/plugin.json`, while `titles` keeps the root. If you ever need two
+entries to share the root `skills/` folder, give each entry an explicit
+`"skills": ["./skills/<name>", …]` list so it loads only its own.
 
 ## Adding a skill
 
 1. **One job per skill.** Keep it narrow; compose by chaining, not by building
    mega-skills.
-2. **Put it under a plugin:** `titles/skills/<skill-name>/SKILL.md`.
+2. **Put it at `skills/<skill-name>/SKILL.md`** (repo root, not under `titles/`).
 3. **Write the description for triggering.** Third person, specific, with explicit
    "Use when the user says…" trigger phrases and a closing `NOT for:` line that
    names the sibling skills it should defer to. With a library this size,
@@ -43,7 +52,10 @@ in `marketplace.json`.
    no directory-name fallback.
 6. **Bump versions:** update the plugin's `version` in its `plugin.json` and the
    matching entry in `marketplace.json`.
-7. **Add it to `titles/README.md`.**
+7. **Add it to `SKILLS.md`.**
+8. **No invisible unicode.** Zero-width and bidi characters score `high` in
+   Hermes's skill scanner, and one high finding blocks install outright at
+   community trust. The validator checks this.
 
 ## Frontmatter conventions
 
