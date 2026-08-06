@@ -1,4 +1,4 @@
-# titles
+# The `titles` skill roster
 
 titles.xyz creative tools on the **TITLES MCP** (`mcp.titles.xyz/mcp`). Each skill
 wraps one creative intent so an agent can drive the TITLES tools correctly on a

@@ -18,10 +18,28 @@ Packaged as a Claude **plugin marketplace** with a single plugin, **`titles`**.
 That installs the whole `titles` skill set. On claude.ai / Cowork, an org admin
 syncs this marketplace's plugin from **Org Settings → Skills**.
 
+## Install (Hermes)
+
+This repo doubles as a [Hermes](https://github.com/NousResearch/hermes-agent)
+skill tap, because `skills/` sits at the repo root:
+
+```
+hermes skills tap add titlesnyc/titles-skills
+hermes skills search titles
+hermes skills install titlesnyc/titles-skills/skills/generate-image
+```
+
+`hermes skills check` and `hermes skills update` then track upstream changes per
+skill (Hermes compares the content hash of each installed skill against this
+repo — no version numbers involved). Skills install at `community` trust, so the
+first install shows a third-party warning panel; all skills here scan clean, so
+no `--force` is needed. Individual skills also install without adding the tap, by
+passing the same `owner/repo/path` identifier.
+
 ## What's inside
 
 The `titles` plugin bundles skills across images, video, audio, and creative
-packs — see [`titles/README.md`](./titles/README.md) for the full roster. Start
+packs — see [`SKILLS.md`](./SKILLS.md) for the full roster. Start
 with **`titles-setup`**; every other skill hands off to it when the TITLES tools
 aren't connected yet.
 
