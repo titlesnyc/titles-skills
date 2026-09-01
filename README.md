@@ -15,8 +15,7 @@ Packaged as a Claude **plugin marketplace** with a single plugin, **`titles`**.
 /plugin install titles@titles-skills
 ```
 
-That installs the whole `titles` skill set. On claude.ai / Cowork, an org admin
-syncs this marketplace's plugin from **Org Settings → Skills**.
+That installs the whole `titles` skill set.
 
 ### Updating
 
@@ -42,6 +41,12 @@ marketplace in your `~/.claude/settings.json` (or a project's
 }
 ```
 
+## Install (claude.ai / Cowork)
+
+No commands here — an org admin syncs this marketplace's plugin from
+**Org Settings → Skills**, and everyone in the org gets the skills across
+claude.ai, Cowork, and cloud sessions.
+
 ## Install (Codex)
 
 Same flow, Codex-flavored:
@@ -58,6 +63,28 @@ codex plugin add titles@titles-skills
 > Codex loads MCP servers from `~/.codex/config.toml` (`[mcp_servers.titles]`) —
 > connect it to `https://mcp.titles.xyz/mcp`, or start with the `titles-setup`
 > skill, which walks the agent through it.
+>
+> ChatGPT itself has no skills mechanism — on the OpenAI side, skills run in
+> Codex. (ChatGPT can still connect to the TITLES MCP directly.)
+
+## Install (Cursor)
+
+Cursor supports agent skills but not this plugin-marketplace flow — install
+with the cross-agent [`skills` CLI](https://github.com/vercel-labs/skills)
+(Node.js required):
+
+```
+npx skills add titlesnyc/titles-skills
+```
+
+It detects Cursor (and any other supported agent), lets you pick skills, and
+installs all 18. Update later with `npx skills update`. The same command works
+as a fallback for any agent the CLI supports — though on Claude Code and Codex,
+prefer the plugin flow above, which can update through the marketplace.
+
+> Same caveat: connect Cursor to the TITLES MCP separately
+> (`.cursor/mcp.json` → `{ "mcpServers": { "titles": { "url": "https://mcp.titles.xyz/mcp" } } }`),
+> or start with `titles-setup`.
 
 ## Install (Hermes Agent)
 
