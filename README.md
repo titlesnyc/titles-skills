@@ -18,6 +18,66 @@ Packaged as a Claude **plugin marketplace** with a single plugin, **`titles`**.
 That installs the whole `titles` skill set. On claude.ai / Cowork, an org admin
 syncs this marketplace's plugin from **Org Settings → Skills**.
 
+### Updating
+
+Third-party marketplaces don't auto-update by default — you stay on the version
+you installed until you run:
+
+```
+/plugin marketplace update titles-skills
+```
+
+To pick up new releases automatically instead, enable auto-update for this
+marketplace in your `~/.claude/settings.json` (or a project's
+`.claude/settings.json` to opt a whole team in):
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "titles-skills": {
+      "source": { "source": "github", "repo": "titlesnyc/titles-skills" },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+## Install (Codex)
+
+Same flow, Codex-flavored:
+
+```
+codex plugin marketplace add titlesnyc/titles-skills
+codex plugin add titles@titles-skills
+```
+
+`codex plugin list` shows what's installed;
+`codex plugin remove titles@titles-skills` uninstalls.
+
+> **The MCP server isn't bundled.** These skills drive the `titles_*` tools, and
+> Codex loads MCP servers from `~/.codex/config.toml` (`[mcp_servers.titles]`) —
+> connect it to `https://mcp.titles.xyz/mcp`, or start with the `titles-setup`
+> skill, which walks the agent through it.
+
+## Install (Hermes Agent)
+
+Add the repo as a skills tap, then install skills by name — Hermes discovers
+the nested `titles/skills/<name>/` layout as-is:
+
+```
+hermes skills tap add titlesnyc/titles-skills
+hermes skills install titlesnyc/titles-skills/titles-setup
+hermes skills install titlesnyc/titles-skills/generate-image
+# …repeat for the skills you want — full roster in titles/README.md
+```
+
+`hermes skills update <name>` pulls the latest;
+`hermes skills uninstall <name>` removes one.
+
+> Same caveat as Codex: Hermes resolves MCP servers from `~/.hermes/config.yaml`
+> (`mcp_servers.titles`) — connect the TITLES MCP separately, or start with
+> `titles-setup`.
+
 ## What's inside
 
 The `titles` plugin bundles skills across images, video, audio, and creative

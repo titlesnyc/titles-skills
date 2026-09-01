@@ -15,7 +15,9 @@ is only the portable, pure-MCP tool-use skills anyone can install.
 
 ```
 .claude-plugin/marketplace.json        # lists every plugin (currently: titles)
+.agents/plugins/marketplace.json       # Codex mirror of the marketplace
 titles/.claude-plugin/plugin.json      # the titles plugin manifest
+titles/.codex-plugin/plugin.json       # the titles plugin manifest (Codex)
 titles/skills/<skill-name>/SKILL.md    # one skill; name in frontmatter == directory
 titles/README.md                       # the plugin's skill roster
 scripts/validate_skills.py             # CI + local validation
@@ -41,8 +43,10 @@ in `marketplace.json`.
    keywords belong in a README, not the description.
 5. **`name:` is required** and must match the directory — claude.ai zip upload has
    no directory-name fallback.
-6. **Bump versions:** update the plugin's `version` in its `plugin.json` and the
-   matching entry in `marketplace.json`.
+6. **Bump versions:** update the plugin's `version` in both `plugin.json` files
+   (`.claude-plugin/` and `.codex-plugin/`) and the matching entry in
+   `marketplace.json`. Installed copies only pick up changes when this version
+   moves — an unbumped release is invisible to existing installs.
 7. **Add it to `titles/README.md`.**
 
 ## Frontmatter conventions
