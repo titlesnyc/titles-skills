@@ -7,13 +7,18 @@ In CI:        exits 1 on any error, prints GitHub ::error annotations.
 Layout (house style — mirrors titlesnyc/titles-internal-skills):
 
     .claude-plugin/marketplace.json      # lists every plugin
+    .agents/plugins/marketplace.json     # Codex mirror of the marketplace
     <plugin>/.claude-plugin/plugin.json  # plugin manifest
+    <plugin>/.codex-plugin/plugin.json   # plugin manifest (Codex)
     <plugin>/skills/<skill-name>/SKILL.md
 
 Each check maps to a failure mode that has actually broken skill syncs:
   - marketplace.json + every plugin.json are valid JSON with required fields
   - every marketplace plugin entry resolves to a dir whose plugin.json name matches
   - every plugin dir on disk is listed in marketplace.json
+  - the Codex mirror stays in sync: its entries resolve to a .codex-plugin/plugin.json
+    whose name matches, every Claude-marketplace plugin appears in it, and the Codex
+    plugin.json version tracks the Claude one
   - skills/ contains ONLY skill directories (a stray file — a .zip especially —
     silently breaks the whole plugin's claude.ai sync)
   - every skill dir has a SKILL.md with YAML frontmatter
@@ -104,6 +109,51 @@ if mkt and isinstance(mkt.get("plugins"), list):
             err(f"plugin '{name}': plugin.json name '{pjson.get('name')}' != marketplace entry", pj)
         if pjson.get("version") != entry.get("version"):
             warn(f"plugin '{name}': version mismatch — plugin.json {pjson.get('version')} vs marketplace {entry.get('version')}", pj)
+
+# --- Codex mirror (.agents/plugins/marketplace.json + <plugin>/.codex-plugin) ---
+codex_mkt_path = ROOT / ".agents" / "plugins" / "marketplace.json"
+if not codex_mkt_path.exists():
+    err("missing .agents/plugins/marketplace.json (Codex marketplace mirror)", codex_mkt_path)
+else:
+    codex_mkt = None
+    try:
+        codex_mkt = json.loads(codex_mkt_path.read_text())
+    except json.JSONDecodeError as e:
+        err(f"Codex marketplace.json is not valid JSON: {e}", codex_mkt_path)
+    if codex_mkt is not None:
+        for k in ("name", "plugins"):
+            if k not in codex_mkt:
+                err(f"Codex marketplace.json missing required key '{k}'", codex_mkt_path)
+        codex_listed = set()
+        for entry in codex_mkt.get("plugins") or []:
+            name = entry.get("name")
+            src = ((entry.get("source") or {}).get("path") or "").lstrip("./")
+            if not name or not src:
+                err(f"Codex marketplace plugin entry missing name/source.path: {entry}", codex_mkt_path)
+                continue
+            codex_listed.add(name)
+            cpj = ROOT / src / ".codex-plugin" / "plugin.json"
+            if not cpj.exists():
+                err(f"Codex plugin '{name}': no plugin.json at {src}/.codex-plugin/plugin.json", codex_mkt_path)
+                continue
+            try:
+                cpjson = json.loads(cpj.read_text())
+            except json.JSONDecodeError as e:
+                err(f"Codex plugin '{name}': plugin.json invalid JSON: {e}", cpj)
+                continue
+            if cpjson.get("name") != name:
+                err(f"Codex plugin '{name}': plugin.json name '{cpjson.get('name')}' != marketplace entry", cpj)
+            claude_pj = ROOT / src / ".claude-plugin" / "plugin.json"
+            if claude_pj.exists():
+                try:
+                    claude_version = json.loads(claude_pj.read_text()).get("version")
+                    if cpjson.get("version") != claude_version:
+                        warn(f"Codex plugin '{name}': version {cpjson.get('version')} != Claude plugin.json {claude_version}", cpj)
+                except json.JSONDecodeError:
+                    pass
+        for name in listed:
+            if name not in codex_listed:
+                err(f"plugin '{name}' is in the Claude marketplace but missing from the Codex mirror", codex_mkt_path)
 
 # --- every plugin dir on disk listed? + per-skill checks ---
 for pj in ROOT.glob("*/.claude-plugin/plugin.json"):

@@ -19,8 +19,10 @@ That installs the whole `titles` skill set.
 
 ### Updating
 
-Third-party marketplaces don't auto-update by default — you stay on the version
-you installed until you run:
+Third-party marketplaces
+[don't auto-update by default](https://code.claude.com/docs/en/discover-plugins#configure-auto-updates)
+(only Anthropic's official marketplaces do) — you stay on the version you
+installed until you run:
 
 ```
 /plugin marketplace update titles-skills
