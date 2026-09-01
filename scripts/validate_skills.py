@@ -98,16 +98,22 @@ else:
                 err(f"marketplace.json missing required key '{k}'", mkt_path)
 
 listed = {}
-if mkt and isinstance(mkt.get("plugins"), list):
-    for entry in mkt["plugins"]:
+if mkt is not None:
+    plugins = mkt.get("plugins")
+    if not isinstance(plugins, list):
+        # A missing key was already reported by the required-key check.
+        if "plugins" in mkt:
+            err(f"marketplace.json 'plugins' must be a list, got {type(plugins).__name__}", mkt_path)
+        plugins = []
+    for entry in plugins:
         if not isinstance(entry, dict):
             err(f"marketplace plugin entry must be an object: {entry!r}", mkt_path)
             continue
         name = entry.get("name")
         src = entry.get("source")
         src = src.lstrip("./") if isinstance(src, str) else ""
-        if not name or not src:
-            err(f"marketplace plugin entry missing name/source: {entry}", mkt_path)
+        if not isinstance(name, str) or not name or not src:
+            err(f"marketplace plugin entry missing/invalid name or source: {entry}", mkt_path)
             continue
         listed[name] = entry
         pj = ROOT / src / ".claude-plugin" / "plugin.json"
@@ -134,10 +140,12 @@ else:
                 err(f"Codex marketplace.json missing required key '{k}'", codex_mkt_path)
         codex_listed = set()
         plugins = codex_mkt.get("plugins")
-        if plugins is not None and not isinstance(plugins, list):
-            err(f"Codex marketplace.json 'plugins' must be a list, got {type(plugins).__name__}", codex_mkt_path)
+        if not isinstance(plugins, list):
+            # A missing key was already reported by the required-key check.
+            if "plugins" in codex_mkt:
+                err(f"Codex marketplace.json 'plugins' must be a list, got {type(plugins).__name__}", codex_mkt_path)
             plugins = []
-        for entry in plugins or []:
+        for entry in plugins:
             if not isinstance(entry, dict):
                 err(f"Codex marketplace plugin entry must be an object: {entry!r}", codex_mkt_path)
                 continue
@@ -145,8 +153,8 @@ else:
             source = entry.get("source")
             src = source.get("path") if isinstance(source, dict) else None
             src = src.lstrip("./") if isinstance(src, str) else ""
-            if not name or not src:
-                err(f"Codex marketplace plugin entry missing name/source.path: {entry}", codex_mkt_path)
+            if not isinstance(name, str) or not name or not src:
+                err(f"Codex marketplace plugin entry missing/invalid name or source.path: {entry}", codex_mkt_path)
                 continue
             codex_listed.add(name)
             cpj = ROOT / src / ".codex-plugin" / "plugin.json"

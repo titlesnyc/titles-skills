@@ -1,12 +1,13 @@
 # TITLES Skills
 
 Agent skills for the [TITLES](https://titles.xyz) creative MCP — reusable
-instructions that teach agents (Claude Code, claude.ai, Cowork, and any
-MCP-capable Claude surface) how to work with TITLES: connecting to the MCP,
-generating and editing images, video, and audio, discovering artist-trained
-models, and running multi-asset creative packs.
+instructions that teach agents (Claude Code, claude.ai, Cowork, Codex, Cursor,
+Hermes, and any MCP-capable agent) how to work with TITLES: connecting to the
+MCP, generating and editing images, video, and audio, discovering
+artist-trained models, and running multi-asset creative packs.
 
-Packaged as a Claude **plugin marketplace** with a single plugin, **`titles`**.
+Packaged as a **plugin marketplace** (Claude Code, mirrored for Codex) with a
+single plugin, **`titles`**.
 
 ## Install (Claude Code)
 
@@ -79,10 +80,11 @@ with the cross-agent [`skills` CLI](https://github.com/vercel-labs/skills)
 npx skills add titlesnyc/titles-skills
 ```
 
-It detects Cursor (and any other supported agent), lets you pick skills, and
-installs all 18. Update later with `npx skills update`. The same command works
-as a fallback for any agent the CLI supports — though on Claude Code and Codex,
-prefer the plugin flow above, which can update through the marketplace.
+It detects Cursor (and any other supported agent) and lets you pick which
+skills to install — or take the whole roster. Update later with
+`npx skills update`. The same command works as a fallback for any agent the
+CLI supports — though on Claude Code and Codex, prefer the plugin flow above,
+which updates through the marketplace.
 
 > Same caveat: connect Cursor to the TITLES MCP separately
 > (`.cursor/mcp.json` → `{ "mcpServers": { "titles": { "url": "https://mcp.titles.xyz/mcp" } } }`),

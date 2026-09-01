@@ -1,7 +1,7 @@
 # Contributing to titles-skills
 
 Public, external-facing skills for the **TITLES MCP** (`mcp.titles.xyz/mcp`),
-packaged as a Claude plugin marketplace. Each skill wraps one TITLES creative
+packaged as a plugin marketplace for Claude Code (mirrored for Codex). Each skill wraps one TITLES creative
 intent — generate/edit/restyle/upscale an image, make or transform video,
 speech, music — so an agent can drive the TITLES tools correctly on a user's
 behalf.
