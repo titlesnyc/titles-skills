@@ -43,6 +43,19 @@ def warn(msg, file=None):
     print(f"::warning {'file=' + str(file) if file else ''}::{msg}")
 
 
+def json_dict(path, label):
+    """Parse path as JSON, requiring a top-level object; err + None otherwise."""
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        err(f"{label} is not valid JSON: {e}", path)
+        return None
+    if not isinstance(data, dict):
+        err(f"{label} must be a JSON object, got {type(data).__name__}", path)
+        return None
+    return data
+
+
 def frontmatter(path):
     """Top-level frontmatter keys -> value; block descriptions (>/|) folded to a
     single space-joined string so length can be checked. None if no frontmatter."""
@@ -78,10 +91,7 @@ mkt = None
 if not mkt_path.exists():
     err("missing .claude-plugin/marketplace.json", mkt_path)
 else:
-    try:
-        mkt = json.loads(mkt_path.read_text())
-    except json.JSONDecodeError as e:
-        err(f"marketplace.json is not valid JSON: {e}", mkt_path)
+    mkt = json_dict(mkt_path, "marketplace.json")
     if mkt is not None:
         for k in ("name", "owner", "plugins"):
             if k not in mkt:
@@ -90,8 +100,12 @@ else:
 listed = {}
 if mkt and isinstance(mkt.get("plugins"), list):
     for entry in mkt["plugins"]:
+        if not isinstance(entry, dict):
+            err(f"marketplace plugin entry must be an object: {entry!r}", mkt_path)
+            continue
         name = entry.get("name")
-        src = (entry.get("source") or "").lstrip("./")
+        src = entry.get("source")
+        src = src.lstrip("./") if isinstance(src, str) else ""
         if not name or not src:
             err(f"marketplace plugin entry missing name/source: {entry}", mkt_path)
             continue
@@ -100,10 +114,8 @@ if mkt and isinstance(mkt.get("plugins"), list):
         if not pj.exists():
             err(f"plugin '{name}': no plugin.json at {src}/.claude-plugin/plugin.json", mkt_path)
             continue
-        try:
-            pjson = json.loads(pj.read_text())
-        except json.JSONDecodeError as e:
-            err(f"plugin '{name}': plugin.json invalid JSON: {e}", pj)
+        pjson = json_dict(pj, f"plugin '{name}': plugin.json")
+        if pjson is None:
             continue
         if pjson.get("name") != name:
             err(f"plugin '{name}': plugin.json name '{pjson.get('name')}' != marketplace entry", pj)
@@ -115,19 +127,24 @@ codex_mkt_path = ROOT / ".agents" / "plugins" / "marketplace.json"
 if not codex_mkt_path.exists():
     err("missing .agents/plugins/marketplace.json (Codex marketplace mirror)", codex_mkt_path)
 else:
-    codex_mkt = None
-    try:
-        codex_mkt = json.loads(codex_mkt_path.read_text())
-    except json.JSONDecodeError as e:
-        err(f"Codex marketplace.json is not valid JSON: {e}", codex_mkt_path)
+    codex_mkt = json_dict(codex_mkt_path, "Codex marketplace.json")
     if codex_mkt is not None:
         for k in ("name", "plugins"):
             if k not in codex_mkt:
                 err(f"Codex marketplace.json missing required key '{k}'", codex_mkt_path)
         codex_listed = set()
-        for entry in codex_mkt.get("plugins") or []:
+        plugins = codex_mkt.get("plugins")
+        if plugins is not None and not isinstance(plugins, list):
+            err(f"Codex marketplace.json 'plugins' must be a list, got {type(plugins).__name__}", codex_mkt_path)
+            plugins = []
+        for entry in plugins or []:
+            if not isinstance(entry, dict):
+                err(f"Codex marketplace plugin entry must be an object: {entry!r}", codex_mkt_path)
+                continue
             name = entry.get("name")
-            src = ((entry.get("source") or {}).get("path") or "").lstrip("./")
+            source = entry.get("source")
+            src = source.get("path") if isinstance(source, dict) else None
+            src = src.lstrip("./") if isinstance(src, str) else ""
             if not name or not src:
                 err(f"Codex marketplace plugin entry missing name/source.path: {entry}", codex_mkt_path)
                 continue
@@ -136,21 +153,20 @@ else:
             if not cpj.exists():
                 err(f"Codex plugin '{name}': no plugin.json at {src}/.codex-plugin/plugin.json", codex_mkt_path)
                 continue
-            try:
-                cpjson = json.loads(cpj.read_text())
-            except json.JSONDecodeError as e:
-                err(f"Codex plugin '{name}': plugin.json invalid JSON: {e}", cpj)
+            cpjson = json_dict(cpj, f"Codex plugin '{name}': plugin.json")
+            if cpjson is None:
                 continue
             if cpjson.get("name") != name:
                 err(f"Codex plugin '{name}': plugin.json name '{cpjson.get('name')}' != marketplace entry", cpj)
             claude_pj = ROOT / src / ".claude-plugin" / "plugin.json"
             if claude_pj.exists():
+                # Shape errors on the Claude side are reported by its own loop.
                 try:
-                    claude_version = json.loads(claude_pj.read_text()).get("version")
-                    if cpjson.get("version") != claude_version:
-                        warn(f"Codex plugin '{name}': version {cpjson.get('version')} != Claude plugin.json {claude_version}", cpj)
+                    claude_pjson = json.loads(claude_pj.read_text())
                 except json.JSONDecodeError:
-                    pass
+                    claude_pjson = None
+                if isinstance(claude_pjson, dict) and cpjson.get("version") != claude_pjson.get("version"):
+                    warn(f"Codex plugin '{name}': version {cpjson.get('version')} != Claude plugin.json {claude_pjson.get('version')}", cpj)
         for name in listed:
             if name not in codex_listed:
                 err(f"plugin '{name}' is in the Claude marketplace but missing from the Codex mirror", codex_mkt_path)
@@ -159,9 +175,12 @@ else:
 for pj in ROOT.glob("*/.claude-plugin/plugin.json"):
     pdir = pj.parent.parent
     try:
-        pname = json.loads(pj.read_text()).get("name")
+        pdata = json.loads(pj.read_text())
     except json.JSONDecodeError:
         continue
+    if not isinstance(pdata, dict):
+        continue
+    pname = pdata.get("name")
     if pname not in listed:
         warn(f"plugin dir '{pdir.name}' (name '{pname}') not listed in marketplace.json", pj)
     skills = pdir / "skills"
