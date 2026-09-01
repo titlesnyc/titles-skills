@@ -174,11 +174,10 @@ else:
 # --- every plugin dir on disk listed? + per-skill checks ---
 for pj in ROOT.glob("*/.claude-plugin/plugin.json"):
     pdir = pj.parent.parent
-    try:
-        pdata = json.loads(pj.read_text())
-    except json.JSONDecodeError:
-        continue
-    if not isinstance(pdata, dict):
+    # json_dict errs on bad JSON/shape (a listed plugin gets reported by the
+    # marketplace loop too — double report beats a silent green pass).
+    pdata = json_dict(pj, f"plugin dir '{pdir.name}': plugin.json")
+    if pdata is None:
         continue
     pname = pdata.get("name")
     if pname not in listed:
