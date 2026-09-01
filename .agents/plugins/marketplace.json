@@ -1,0 +1,15 @@
+{
+  "name": "titles-skills",
+  "interface": {
+    "displayName": "TITLES Skills",
+    "shortDescription": "Agent skills for the TITLES creative MCP (titles.xyz)"
+  },
+  "plugins": [
+    {
+      "name": "titles",
+      "source": { "source": "local", "path": "./titles" },
+      "policy": { "installation": "AVAILABLE" },
+      "category": "Productivity"
+    }
+  ]
+}
