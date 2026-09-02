@@ -158,7 +158,7 @@ Before delivering, do one final pass over the whole set together — some drift 
 - The `session_url` (canvas) — raw output URLs 403.
 - Files via `titles_download_asset({ output_id, format: "png" })` — host-adaptive: `curl` to disk on a shell host (Claude Code / Codex), a short-lived link on a chat host.
 - **Write the character down** so it survives the session: the frozen Character Anchor text, the artist `model_id` + artist credit, and the sheet's `output_id`s in order with what each view is. That list is the reusable character — it's what makes the next session cheap.
-- Offer the next step and pass the sheet along: put them in a campaign (`promo-pack`), animate them (`animate-image`, or `imgRefs2VidNode` via `titles_run_execution` for reference-guided video), or publish with credit (`titles_publish`).
+- Offer the next step and pass the sheet along: put them in a campaign (`promo-pack`), carry them into video shots (**animate-character** — hand it the sheet), animate a single still (`animate-image`), or publish with credit (`titles_publish`).
 
 ## Honest limits
 

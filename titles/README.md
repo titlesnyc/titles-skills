@@ -38,6 +38,7 @@ the TITLES tools aren't connected yet.
 | Skill | Job |
 |---|---|
 | `create-character` | Build a reusable character + sheet, then hold them consistent across images |
+| `animate-character` | Carry a locked character across video shots that cut together |
 | `promo-pack` | A full set of promo/campaign assets in one style, sized per channel |
 | `motion-pack` | An artist's stills → a set of short motion loops |
 | `curation-digest` | Browse the feed, save the best in a style, with a taste report |
